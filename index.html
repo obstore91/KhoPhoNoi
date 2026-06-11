@@ -141,7 +141,6 @@
 </head>
 <body>
 
-<!-- GIAO DIỆN MÀN HÌNH KHÓA VÒNG NGOÀI CHỐNG KHÁCH LẠ -->
 <div id="login-screen">
     <div class="login-box">
         <h2>🔒 HỆ THỐNG KHO NỘI BỘ</h2>
@@ -180,7 +179,6 @@
     </div>
 
     <div class="main-layout">
-        <!-- BÊN TRÁI -->
         <div>
             <div class="warehouse-selector">
                 <button class="tab-btn active" id="btn-kho-sx" onclick="switchWarehouse('Kho sản xuất')">🏭 KHO SẢN XUẤT</button>
@@ -209,7 +207,7 @@
             </div>
 
             <div class="card" style="margin-top: 15px;">
-                <div class="card-title">📜 Nhật Ký Hoạt Động Xuất Nhập Chi Tiết</div>
+                <div class="card-title">📜 Nhật Ký Hoạt ĐỘng Xuất Nhập Chi Tiết</div>
                 <div class="table-container" style="max-height: 300px;">
                     <table>
                         <thead>
@@ -228,7 +226,6 @@
             </div>
         </div>
 
-        <!-- BÊN PHẢI -->
         <div class="panel-right">
             <div class="card" id="detail-card" style="border: 1px solid var(--primary);">
                 <div class="card-title" style="color: var(--primary);">
@@ -238,7 +235,6 @@
                 <div id="detail-content"><p style="color: #666; font-style: italic;">Bấm chọn một ô trên sơ đồ bãi kho để xem chi tiết danh sách từng mã hàng.</p></div>
             </div>
 
-            <!-- FORM CHÍNH -->
             <div class="card" id="action-card" style="display:none; border: 2px solid #2563eb;">
                 <div class="card-title" id="action-title">Thao tác kho</div>
                 <form id="warehouse-form">
@@ -250,11 +246,9 @@
                     </div>
                     <div class="form-row">
                         <div class="form-group"><label>Tên ô kho chọn</label><input type="text" id="form-slot-num" class="form-control" readonly style="background:#e5e7eb; font-weight:bold; color:var(--primary);"></div>
-                        <!-- Ô NHẬP SỐ PHIẾU DÙNG CHUNG -->
                         <div class="form-group"><label style="color:var(--danger);">Số Phiếu Thao Tác *</label><input type="text" id="form-voucher" class="form-control" placeholder="Ví dụ: PN-001, PX-002"></div>
                     </div>
 
-                    <!-- NHẬP HÀNG -->
                     <div id="nhap-info-fields" style="display:none; background: #f0fdf4; padding: 10px; border-radius: 6px; border: 1px solid #bbf7d0; margin-bottom: 10px;">
                         <p style="font-weight:bold; font-size:12px; color:var(--success); margin-bottom:6px;">📋 Chi tiết khai báo Lô Nhập Hàng:</p>
                         
@@ -288,7 +282,6 @@
                         <div class="form-group"><label>Ghi chú chi tiết</label><input type="text" id="form-note" class="form-control"></div>
                     </div>
 
-                    <!-- DANH SÁCH LÔ GỐC -->
                     <div id="select-lot-wrapper" style="display:none; background:#fffbf0; padding:10px; border-radius:6px; border:1px solid #fef08a; margin-bottom:10px;">
                         <label id="select-lot-title" style="font-weight:bold; font-size:12px; color:var(--warning); display:block; margin-bottom:5px;">📍 Nhập số lượng lấy ra tại các lô tương ứng bên dưới:</label>
                         <div style="max-height:180px; overflow-y:auto; border:1px solid #cbd5e1; border-radius:4px;">
@@ -305,7 +298,6 @@
                         </div>
                     </div>
 
-                    <!-- GIA CÔNG / CẮT GHÉP ĐẦU RA -->
                     <div id="giacong-output-fields" style="display:none;" class="giacong-box">
                         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid #a5f3fc; margin-bottom:8px; padding-bottom:4px;">
                             <h4 style="border:none; margin:0; padding:0;">✂️ KHAI BÁO HÀNG ĐẦU RA SAU CẮT/GHÉP</h4>
@@ -334,7 +326,6 @@
                         </div>
                     </div>
 
-                    <!-- CHUYỂN VỊ TRÍ -->
                     <div id="transfer-destination" style="display: none; border-top: 1px solid #eee; padding-top: 10px; margin-bottom: 10px;">
                         <p style="font-weight: bold; font-size: 13px; color: var(--primary); margin-bottom: 8px;">📍 Ô ĐÍCH ĐẾN CHUYỂN VỊ TRÍ:</p>
                         <div class="form-row">
@@ -351,7 +342,6 @@
                 </form>
             </div>
 
-            <!-- BẢNG THỐNG KÊ PIVOT -->
             <div class="card">
                 <div class="card-title">📊 Bảng Tổng Hợp Hàng Hóa Theo Vị Trí Ô Kho</div>
                 <div class="table-container" style="max-height: 380px;">
@@ -381,7 +371,7 @@
 </div>
 
 <script>
-    // --- LÔGIC KIỂM TRA MẬT KHẨU KHÓA VÒNG NGOÀI (ĐÃ SỬA LẠI CHÍNH XÁC LÀ khocattuong2) ---
+    // --- LÔGIC KIỂM TRA MẬT KHẨU KHÓA VÒNG NGOÀI ---
     function checkSitePassword() {
         const inputPass = document.getElementById("site-password-input").value;
         if (inputPass === "khocattuong2") {
@@ -406,8 +396,6 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    
-    // MẬT KHẨU HÀNH ĐỘNG HỦY BƯỚC / BACKUP VÒNG TRONG
     const ADMIN_PASSWORD = "242026";
 
     window.currentWarehouse = "Kho sản xuất"; 
@@ -482,7 +470,6 @@
         }
     }
 
-    // ĐỒNG BỘ CLOUD VỚI BỘ BẮT LỖI THÔNG MINH
     function syncWithCloud(actionType = "read") {
         const indicator = document.getElementById("save-indicator");
         indicator.innerText = "⏳ Đang kết nối Đám mây Google...";
@@ -510,7 +497,6 @@
                 clearTimeout(timeoutCheck);
                 indicator.innerText = "🔴 Lỗi lưu Firebase: " + err.message;
                 indicator.style.color = "var(--danger)";
-                console.error(err);
             });
         } else {
             docRef.get().then((docSnap) => {
@@ -533,15 +519,11 @@
                 clearTimeout(timeoutCheck);
                 indicator.innerText = "🔴 Lỗi tải Firebase: " + err.message;
                 indicator.style.color = "var(--danger)";
-                console.error(err);
-                alert("Không thể kết nối đến Máy chủ Google. Vui lòng kiểm tra lại mạng Wifi/4G hoặc tắt phần mềm diệt virus đang chặn kết nối.");
             });
         }
     }
 
-    // TÌM KIẾM CẢ SỐ PHIẾU VÀ SỐ HĐ
     window.handleSearch = () => { window.searchQuery = document.getElementById("search-input").value.trim().toLowerCase(); renderWarehouseMap(); };
-    
     window.switchWarehouse = (whName) => { window.currentWarehouse = whName; document.getElementById("btn-kho-sx").className = whName === "Kho sản xuất" ? "tab-btn active" : "tab-btn"; document.getElementById("btn-kho-hh").className = whName === "Kho hàng hóa" ? "tab-btn active" : "tab-btn"; window.selectedSlotKey = null; renderWarehouseMap(); document.getElementById("detail-content").innerHTML = `<p style="color: #666; font-style: italic;">Đã chuyển sang sơ đồ ${whName}. Ấn chọn ô để xem chi tiết.</p>`; };
     window.hideActionCard = () => { document.getElementById("action-card").style.display = "none"; document.getElementById("warehouse-form").reset(); };
     function formatDateDisplay(dStr) { if(!dStr) return ""; let p = dStr.split("-"); return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : dStr; }
@@ -630,7 +612,6 @@
         renderInventoryTable();
     }
 
-    // BẢNG CHI TIẾT Ô KHO
     function showDetailPanel(side, num, displayName) {
         const lots = window.inventory[window.selectedSlotKey] || []; const detailContent = document.getElementById("detail-content");
         let headerHtml = `<div style="background:#f8fafc; padding:10px; border-radius:6px; margin-bottom:10px; border-left:4px solid var(--primary);"><p>📍 <b>${window.currentWarehouse}</b> ➜ Khu vực: <b>${side}</b></p><p style="font-size:13px; color:var(--primary); font-weight:bold; margin-top:2px;">📌 Vị trí ô: ${displayName}</p></div>`;
@@ -750,7 +731,7 @@
         if (val > maxVal) { alert(`Lô này chỉ còn tồn tối đa ${maxVal} sản phẩm!`); input.value = maxVal; }
     }
 
-    // XỬ LÝ LƯU FORM THỦ CÔNG KÈM SỐ PHIẾU
+    // --- CẤU TRÚC LƯU TRỮ MỚI: TÍCH HỢP MẢNG DETAILS SẠCH ĐỂ ĐIỀU TỐC EXCEL ---
     window.submitWarehouseForm = function() {
         const mode = document.getElementById("form-mode").value;
         const wh = document.getElementById("form-wh").value; 
@@ -795,6 +776,7 @@
         let timeStr = new Date().toLocaleString('vi-VN');
         let currentDayStr = new Date().toISOString().substring(0, 10);
         let inventorySnapshot = JSON.stringify(window.inventory);
+        let detailsArr = []; // Mảng sạch xuất excel
 
         if (mode === "nhap") {
             const qty = parseInt(document.getElementById("form-qty-nhap").value);
@@ -810,7 +792,11 @@
             if(itemType === 'cach_nhiet') newLot.lengthPerRoll = lengthPerRoll;
             
             window.inventory[sourceKey].push(newLot);
-            window.logs.unshift({ time: timeStr, dateRaw: dateAction, action: "NHẬP", pos: locDisplay, name: `Mã: ${formatItemName(newLot)} (HĐ: ${contract} | Phiếu: ${voucher})`, customer: customer || "---", qty: `+${qty}`, snapshot: inventorySnapshot });
+            let finalName = formatItemName(newLot);
+
+            detailsArr.push({ name: finalName, qty: qty, type: 'NHẬP', contract: contract, voucher: voucher, pos: locDisplay, partner: customer || "Nội bộ" });
+
+            window.logs.unshift({ time: timeStr, dateRaw: dateAction, action: "NHẬP", pos: locDisplay, name: `Mã: ${finalName} (HĐ: ${contract})`, customer: customer || "---", qty: `+${qty}`, snapshot: inventorySnapshot, details: detailsArr, voucher: voucher });
         } 
         else {
             const inputs = document.querySelectorAll(".multi-lot-input");
@@ -825,10 +811,13 @@
             if (mode === "xuat") {
                 itemsToProcess.forEach(item => {
                     let targetLot = window.inventory[sourceKey][item.originalIdx];
-                    summaryLogText += `${formatItemName(targetLot)}: -${item.qtyToTake}; `;
+                    let finalName = formatItemName(targetLot);
+                    summaryLogText += `${finalName}: -${item.qtyToTake}; `;
                     targetLot.qty -= item.qtyToTake;
+
+                    detailsArr.push({ name: finalName, qty: item.qtyToTake, type: 'XUẤT', contract: targetLot.contract, voucher: voucher, pos: locDisplay, partner: "Bán thẳng" });
                 });
-                window.logs.unshift({ time: timeStr, dateRaw: currentDayStr, action: "XUẤT", pos: locDisplay, name: `[Phiếu: ${voucher}] Đơn xuất gộp -> [ ${summaryLogText} ]`, customer: "Bán thẳng", qty: `-${totalProcessedQty}`, snapshot: inventorySnapshot });
+                window.logs.unshift({ time: timeStr, dateRaw: currentDayStr, action: "XUẤT", pos: locDisplay, name: `Đơn xuất gộp -> [ ${summaryLogText} ]`, customer: "Bán thẳng", qty: `-${totalProcessedQty}`, snapshot: inventorySnapshot, details: detailsArr, voucher: voucher });
             } 
             else if (mode === "chuyen") {
                 const destWh = document.getElementById("dest-wh").value; const destSide = document.getElementById("dest-side").value; let destSlotNum = document.getElementById("dest-slot-num").value.trim();
@@ -838,11 +827,17 @@
 
                 itemsToProcess.forEach(item => {
                     let sourceLot = window.inventory[sourceKey][item.originalIdx];
-                    summaryLogText += `${formatItemName(sourceLot)}: Dời ${item.qtyToTake}; `;
+                    let finalName = formatItemName(sourceLot);
+                    summaryLogText += `${finalName}: Dời ${item.qtyToTake}; `;
+                    
                     window.inventory[destKey].push({ ...sourceLot, qty: item.qtyToTake, voucher: voucher });
                     sourceLot.qty -= item.qtyToTake;
+
+                    // Ghi nhận cả đầu xuất lẫn đầu nhập nội bộ để Pivot Excel tính toán
+                    detailsArr.push({ name: finalName, qty: item.qtyToTake, type: 'XUẤT', contract: sourceLot.contract, voucher: voucher, pos: locDisplay, partner: `Chuyển sang ${destDisplay}` });
+                    detailsArr.push({ name: finalName, qty: item.qtyToTake, type: 'NHẬP', contract: sourceLot.contract, voucher: voucher, pos: destDisplay, partner: `Nhận từ ${locDisplay}` });
                 });
-                window.logs.unshift({ time: timeStr, dateRaw: currentDayStr, action: "CHUYỂN VỊ TRÍ", pos: `Từ ${locDisplay} ➜ ${destDisplay}`, name: `[Phiếu: ${voucher}] Di chuyển -> [ ${summaryLogText} ]`, customer: "Nội bộ", qty: totalProcessedQty, snapshot: inventorySnapshot });
+                window.logs.unshift({ time: timeStr, dateRaw: currentDayStr, action: "CHUYỂN VỊ TRÍ", pos: `Từ ${locDisplay} ➜ ${destDisplay}`, name: `Di chuyển -> [ ${summaryLogText} ]`, customer: "Nội bộ", qty: totalProcessedQty, snapshot: inventorySnapshot, details: detailsArr, voucher: voucher });
             }
             else if (mode === "giacong") {
                 const names = document.querySelectorAll(".gc-name"); const qties = document.querySelectorAll(".gc-qty"); const lens = document.querySelectorAll(".gc-len");
@@ -863,21 +858,30 @@
                 if(!window.inventory[destKey]) window.inventory[destKey] = [];
 
                 let rootContract = window.inventory[sourceKey][itemsToProcess[0].originalIdx].contract;
+                
+                // 1. Xuất nguyên liệu gốc đi gia công
                 let inText = "";
                 itemsToProcess.forEach(item => {
                     let sourceLot = window.inventory[sourceKey][item.originalIdx];
-                    inText += `${formatItemName(sourceLot)} (-${item.qtyToTake}); `;
+                    let finalName = formatItemName(sourceLot);
+                    inText += `${finalName} (-${item.qtyToTake}); `;
                     sourceLot.qty -= item.qtyToTake;
+
+                    detailsArr.push({ name: finalName, qty: item.qtyToTake, type: 'XUẤT', contract: sourceLot.contract, voucher: voucher, pos: locDisplay, partner: "Nguyên liệu cắt ghép" });
                 });
 
+                // 2. Nhập thành phẩm mới sau gia công vào ô đích
                 let outText = "";
                 outputCreated.forEach(outItem => {
-                    outText += `${formatItemName(outItem)} (+${outItem.qty}); `;
+                    let finalName = formatItemName(outItem);
+                    outText += `${finalName} (+${outItem.qty}); `;
                     window.inventory[destKey].push({ name: outItem.name, qty: outItem.qty, itemType: outItem.itemType, lengthPerRoll: outItem.lengthPerRoll, contract: `GC-${rootContract}`, voucher: voucher, dateAction: currentDayStr, customer: "Hàng Gia công", note: "Tạo từ Cắt/Ghép", isCustomerItem: false });
+
+                    detailsArr.push({ name: finalName, qty: outItem.qty, type: 'NHẬP', contract: `GC-${rootContract}`, voucher: voucher, pos: destDisplay, partner: "Thành phẩm gia công" });
                 });
                 
                 let scrapText = document.getElementById("gc-summary").innerText;
-                window.logs.unshift({ time: timeStr, dateRaw: currentDayStr, action: "GIA CÔNG", pos: `Tại ${locDisplay} ➜ ${destDisplay}`, name: `[Phiếu: ${voucher}] Gốc: [${inText}] ➜ Mới: [${outText}]`, customer: `[${scrapText}]`, qty: `Tạo: ${totalOutQty}`, snapshot: inventorySnapshot });
+                window.logs.unshift({ time: timeStr, dateRaw: currentDayStr, action: "GIA CÔNG", pos: `Tại ${locDisplay} ➜ ${destDisplay}`, name: `Gốc: [${inText}] ➜ Mới: [${outText}]`, customer: `[${scrapText}]`, qty: `Tạo: ${totalOutQty}`, snapshot: inventorySnapshot, details: detailsArr, voucher: voucher });
             }
         }
         
@@ -951,7 +955,7 @@
                 <td><small>${log.time}</small></td>
                 <td>${bd}</td>
                 <td><small><b>${log.pos}</b></small></td>
-                <td>${log.name}</td>
+                <td>${log.name} (Phiếu: ${log.voucher || '---'})</td>
                 <td style="font-weight:bold; text-align:right; color:${log.action==='NHẬP'?'var(--success)':log.action==='XUẤT'?'var(--danger)':'#333'}">${log.qty}</td>
                 <td style="text-align:center;"><button class="btn-delete-log" onclick="deleteSpecificLogStep(${index})">❌ Hoàn tác</button></td>
             `;
@@ -959,58 +963,129 @@
         });
     }
 
+    // --- 📊 HỆ THỐNG XUẤT EXCEL CHUẨN KẾ TOÁN: PHÂN TÁCH LUỒNG XUẤT NHẬP TỒN TRỰC QUAN ---
     window.exportDataToExcel = function(type) {
-        const fromDate = document.getElementById("excel-from-date").value; const toDate = document.getElementById("excel-to-date").value;
-        if(!fromDate || !toDate) { alert("Vui lòng chọn đầy đủ mốc thời gian!"); return; }
+        const fromDate = document.getElementById("excel-from-date").value; 
+        const toDate = document.getElementById("excel-to-date").value;
+        if(!fromDate || !toDate) { alert("Vui lòng chọn đầy đủ mốc thời gian báo cáo!"); return; }
         let wb = XLSX.utils.book_new();
 
         if (type === 'tonghop') {
-            let summaryRows = [["BÁO CÁO TỔNG HỢP XUẤT NHẬP TỒN HÀNG HÓA KHO CÁT TƯỜNG"],[`Khoảng thời gian: ${formatDateDisplay(fromDate)} đến ${formatDateDisplay(toDate)}`],[],["STT", "Vị Trí Ô Kho", "Mã Hàng Hóa", "Số Phiếu Gốc", "Số Hợp Đồng / Lô", "Số Lượng Tồn Bãi"]];
-            let index = 1;
+            // MẪU 1: BÁO CÁO TỔNG HỢP NHẬP - XUẤT - TỒN THEO KHOẢNG THỜI GIAN
+            let summaryRows = [
+                ["BÁO CÁO TỔNG HỢP NHẬP - XUẤT - TỒN BÃI KHO CÁT TƯỜNG"],
+                [`Khoảng thời gian thống kê: Từ ngày ${formatDateDisplay(fromDate)} đến ngày ${formatDateDisplay(toDate)}`],
+                [],
+                ["STT", "Vị Trí Ô Kho", "Mã Hàng Hóa (Quy Cách)", "Số Hợp Đồng / Lô", "Số Phiếu Gốc", "Tổng Nhập Trong Kỳ (+)", "Tổng Xuất Trong Kỳ (-)", "Tồn Kho Hiện Tại"]
+            ];
+
+            let reportMap = {};
+
+            // Bốc dữ liệu tồn kho hiện tại làm mốc
             for (const [slotKey, lots] of Object.entries(window.inventory)) {
-                const p = slotKey.split("_"); const cleanPos = `${p[0]} -> Dãy ${p[1].charAt(4)} -> Ô ${p[2]}`;
+                const p = slotKey.split("_");
+                const cleanPos = p[0].replace("Kho ", "K") + "-" + p[1].charAt(4) + "-" + p[2];
                 lots.forEach(lot => {
-                    if (lot.qty > 0 && lot.dateAction >= fromDate && lot.dateAction <= toDate) {
-                        summaryRows.push([index++, cleanPos, formatItemName(lot), lot.voucher || '---', lot.contract, lot.qty]);
+                    if (lot.qty > 0) {
+                        let dName = formatItemName(lot);
+                        let gKey = `${cleanPos}|||${dName}|||${lot.contract}`;
+                        if (!reportMap[gKey]) {
+                            reportMap[gKey] = { pos: cleanPos, name: dName, contract: lot.contract, voucher: lot.voucher || '---', nhap: 0, xuat: 0, ton: 0 };
+                        }
+                        reportMap[gKey].ton += lot.qty;
                     }
                 });
             }
-            let ws = XLSX.utils.aoa_to_sheet(summaryRows); XLSX.utils.book_append_sheet(wb, ws, "Báo Cáo Tổng Hợp XNT"); XLSX.writeFile(wb, `Bao_Cao_XNT_Tong_Hop.xlsx`);
-        } 
-        else if (type === 'chitiet') {
-            let detailRows = [["SỔ CHI TIẾT NHẬT KÝ HOẠT ĐỘNG BIẾN ĐỘNG KHO BÃI CÁT TƯỜNG"],[`Thời gian: ${formatDateDisplay(fromDate)} đến ${formatDateDisplay(toDate)}`],[],["Mốc Thời Gian", "Hành Động", "Vị Trí Ô Kho", "Thông Tin Hàng & Số Phiếu", "Biến Động Số Lượng"]];
+
+            // Quét ngược log lịch sử sạch để nhặt số lượng Nhập/Xuất khớp khoảng thời gian
             window.logs.forEach(log => {
-                if (log.dateRaw && log.dateRaw >= fromDate && log.dateRaw <= toDate) detailRows.push([log.time, log.action, log.pos, log.name, log.qty]);
-            });
-            let ws = XLSX.utils.aoa_to_sheet(detailRows); XLSX.utils.book_append_sheet(wb, ws, "Sổ Chi Tiết Hoạt Động"); XLSX.writeFile(wb, `So_Chi_Tiet_Bien_Dong_Kho.xlsx`);
-        }
-    }
-
-    // SAO LƯU LỊCH SỬ
-    function triggerWebBackupRollback() {
-        let input = prompt("Nhập mật khẩu quản trị viên để khôi phục lịch sử:"); 
-        if (input !== ADMIN_PASSWORD) { alert("❌ Sai mật khẩu!"); return; }
-        const selectBox = document.getElementById("backup-version-select"); selectBox.innerHTML = "<option>⌛ Đang tải lịch sử từ Google Cloud...</option>";
-        document.getElementById("backup-card").style.display = "block"; document.getElementById("action-card").style.display = "none";
-        db.collection("HistoryBackups").get().then((backSnap) => {
-            selectBox.innerHTML = ""; let keys = []; backSnap.forEach(doc => { keys.push(doc.id); }); keys.sort().reverse();
-            if(keys.length === 0) selectBox.innerHTML = "<option value='none'>Chưa có bản chụp kho nào</option>";
-            else keys.forEach(k => { selectBox.innerHTML += `<option value="${k}">Bản chụp ngày: ${k.replace(/-/g, "/")}</option>`; });
-        });
-    }
-
-    function executeRollback() {
-        const target = document.getElementById("backup-version-select").value; if(!target || target === "none") return;
-        if(confirm(`Xác nhận khôi phục toàn bộ số liệu kho về mốc ngày [${target.replace(/-/g, "/")}]?`)) {
-            db.collection("HistoryBackups").doc(target).get().then((docSnap) => {
-                if(docSnap.exists) {
-                    let rawInv = docSnap.data().inventoryRaw; window.inventory = rawInv ? JSON.parse(rawInv) : {};
-                    window.logs.unshift({ time: new Date().toLocaleString('vi-VN'), dateRaw: new Date().toISOString().substring(0, 10), action: "CHUYỂN VỊ TRÍ", pos: "HỆ THỐNG", name: "Phục hồi trạng thái kho lịch sử", customer: "Admin", qty: `Mốc ${target}` });
-                    syncWithCloud("write"); document.getElementById("backup-card").style.display = "none"; alert("🟢 Khôi phục thành công dữ liệu ngày: " + target.replace(/-/g, "/"));
+                if (log.dateRaw && log.dateRaw >= fromDate && log.dateRaw <= toDate && log.details) {
+                    log.details.forEach(det => {
+                        let gKey = `${det.pos}|||${det.name}|||${det.contract}`;
+                        if (!reportMap[gKey]) {
+                            reportMap[gKey] = { pos: det.pos, name: det.name, contract: det.contract, voucher: det.voucher || log.voucher || '---', nhap: 0, xuat: 0, ton: 0 };
+                        }
+                        if (det.type === 'NHẬP') {
+                            reportMap[gKey].nhap += det.qty;
+                        } else if (det.type === 'XUẤT') {
+                            reportMap[gKey].xuat += det.qty;
+                        }
+                    });
                 }
             });
+
+            let index = 1;
+            for (const [k, obj] of Object.entries(reportMap)) {
+                summaryRows.push([
+                    index++,
+                    obj.pos,
+                    obj.name,
+                    obj.contract,
+                    obj.voucher,
+                    obj.nhap || 0,
+                    obj.xuat || 0,
+                    obj.ton
+                ]);
+            }
+
+            let ws = XLSX.utils.aoa_to_sheet(summaryRows);
+            XLSX.utils.book_append_sheet(wb, ws, "Tổng Hợp Nhập Xuất Tồn");
+            XLSX.writeFile(wb, `Bao_Cao_XNT_Tong_Hop_${fromDate}_To_${toDate}.xlsx`);
+        } 
+        else if (type === 'chitiet') {
+            // MẪU 2: SỔ CHI TIẾT NHẬT KÝ BIẾN ĐỘNG KHO (Tách Biệt 2 Cột Nhập / Xuất)
+            let detailRows = [
+                ["SỔ CHI TIẾT BIẾN ĐỘNG HOẠT ĐỘNG BÃI KHO CÁT TƯỜNG"],
+                [`Thời gian ghi sổ: Từ ngày ${formatDateDisplay(fromDate)} đến ngày ${formatDateDisplay(toDate)}`],
+                [],
+                ["Mốc Thời Gian", "Hành Động", "Số Phiếu", "Vị Trí Ô Kho", "Thông Tin Tên Hàng Hóa", "Số Hợp Đồng / Lô", "Số Lượng NHẬP (+)", "Số Lượng XUẤT (-)", "Đối Tác / Mục Đích"]
+            ];
+
+            // Duyệt log từ cũ đến mới để xem dòng chảy
+            let sortedLogs = [...window.logs].reverse();
+
+            sortedLogs.forEach(log => {
+                if (log.dateRaw && log.dateRaw >= fromDate && log.dateRaw <= toDate) {
+                    if (log.details && log.details.length > 0) {
+                        log.details.forEach(det => {
+                            detailRows.push([
+                                log.time,
+                                log.action,
+                                det.voucher || log.voucher || '---',
+                                det.pos,
+                                det.name,
+                                det.contract,
+                                det.type === 'NHẬP' ? det.qty : 0,
+                                det.type === 'XUẤT' ? det.qty : 0,
+                                det.partner || log.customer || '---'
+                            ]);
+                        });
+                    } else {
+                        // Hỗ trợ hiển thị các log cũ chưa nâng cấp cấu trúc mảng details
+                        let rawQtyNum = parseInt(log.qty.replace(/[+-]/g, '')) || 0;
+                        detailRows.push([
+                            log.time,
+                            log.action,
+                            log.voucher || '---',
+                            log.pos,
+                            log.name,
+                            '---',
+                            log.qty.includes('+') ? rawQtyNum : 0,
+                            log.qty.includes('-') ? rawQtyNum : 0,
+                            log.customer || '---'
+                        ]);
+                    }
+                }
+            });
+
+            let ws = XLSX.utils.aoa_to_sheet(detailRows);
+            XLSX.utils.book_append_sheet(wb, ws, "Sổ Chi Tiết Kho");
+            XLSX.writeFile(wb, `So_Chi_Tiet_Bien_Dong_Kho_${fromDate}_To_${toDate}.xlsx`);
         }
     }
+
+    // Khởi động
+    syncWithCloud("read");
 </script>
 </body>
 </html>
