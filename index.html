@@ -117,6 +117,23 @@
 </head>
 <body>
 
+<script>
+    // --- LỚP BẢO MẬT VÒNG NGOÀI (CHẶN NGƯỜI LẠ) ---
+    let accessGranted = false;
+    while (!accessGranted) {
+        let sitePass = prompt("🔒 HỆ THỐNG KHO NỘI BỘ\n\nVui lòng nhập mật khẩu để xem giao diện:");
+        if (sitePass === "phonoia123") {
+            accessGranted = true;
+        } else if (sitePass === null) {
+            document.body.innerHTML = "<div style='display:flex; justify-content:center; align-items:center; height:100vh; background:#f0f2f5;'><h2 style='color:#dc2626; font-family:sans-serif;'>❌ TRUY CẬP BỊ TỪ CHỐI DO HỦY ĐĂNG NHẬP</h2></div>";
+            throw new Error("Truy cập bị chặn.");
+        } else {
+            alert("❌ Mật khẩu không chính xác! Vui lòng nhập lại.");
+        }
+    }
+    // ----------------------------------------------
+</script>
+
 <div class="container">
     <header>
         <div>
@@ -125,7 +142,6 @@
         </div>
         <div class="actions-bar">
             <input type="text" id="search-input" class="search-box" placeholder="🔍 Tìm Mã hàng, Số HĐ..." oninput="handleSearch()">
-            <!-- NÚT LÀM MỚI Ở ĐÂY ĐÃ ĐƯỢC TÔ ĐẬM VÀ RẤT RÕ RÀNG -->
             <button class="btn-primary" style="background:#0284c7; box-shadow: 0 2px 4px rgba(0,0,0,0.2);" onclick="syncWithCloud('read')">🔄 Làm Mới Dữ Liệu</button>
             <button class="btn-dark" onclick="triggerWebBackupRollback()">⏪ Khôi Phục Lịch Sử</button>
         </div>
@@ -199,7 +215,6 @@
             <div class="card" id="detail-card" style="border: 1px solid var(--primary);">
                 <div class="card-title" style="color: var(--primary);">
                     🔍 Chi Tiết Các Mã Hàng Tại Ô Kho
-                    <!-- Thêm 1 nút làm mới thu nhỏ ở đây cho tiện -->
                     <button class="btn-primary" style="padding: 4px 8px; font-size: 11px;" onclick="syncWithCloud('read')">🔄 Tải Lại</button>
                 </div>
                 <div id="detail-content"><p style="color: #666; font-style: italic;">Bấm chọn một ô trên sơ đồ bãi kho để xem chi tiết danh sách từng mã hàng.</p></div>
@@ -208,7 +223,6 @@
             <!-- FORM CHÍNH -->
             <div class="card" id="action-card" style="display:none; border: 2px solid #2563eb;">
                 <div class="card-title" id="action-title">Thao tác kho</div>
-                <!-- BỎ ONSUBMIT TRUYỀN THỐNG ĐỂ TRÁNH LỖI HTML5 HIDDEN FIELDS -->
                 <form id="warehouse-form">
                     <input type="hidden" id="form-mode">
                     
@@ -317,7 +331,6 @@
                     </div>
 
                     <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <!-- ĐỔI TỪ type="submit" SANG type="button" ĐỂ CHỐNG LỖI CÂM NÚT -->
                         <button type="button" id="btn-submit-form" class="btn-primary" style="flex: 1; justify-content: center;" onclick="submitWarehouseForm()">Xác Nhận</button>
                         <button type="button" onclick="hideActionCard()" style="background: var(--gray-200); color: black; padding: 10px 15px; border-radius: 6px; font-weight: bold; border: none; cursor: pointer;">Hủy</button>
                     </div>
@@ -357,7 +370,9 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    const ADMIN_PASSWORD = "123456";
+    
+    // --- LỚP BẢO MẬT VÒNG TRONG (QUẢN TRỊ VIÊN) ---
+    const ADMIN_PASSWORD = "242026";
 
     // 2. BIẾN TOÀN CỤC
     window.currentWarehouse = "Kho sản xuất"; 
@@ -682,7 +697,7 @@
         if (val > maxVal) { alert(`Lô này chỉ còn tồn tối đa ${maxVal} sản phẩm!`); input.value = maxVal; }
     }
 
-    // 8. LOGIC KIỂM TRA LỖI THỦ CÔNG & LƯU TRỮ (GIẢI PHÁP CHỐNG "ĐƠ" NÚT)
+    // 8. LOGIC KIỂM TRA LỖI THỦ CÔNG & LƯU TRỮ
     window.submitWarehouseForm = function() {
         const mode = document.getElementById("form-mode").value;
         const wh = document.getElementById("form-wh").value; 
@@ -691,7 +706,7 @@
         const sourceKey = `${wh}_${side}_${slotNum}`; 
         const locDisplay = `${wh.replace("Kho ", "K")}-${side.charAt(4)}-${slotNum}`;
         
-        // 8.1 - BỘ LỌC KIỂM TRA LỖI RÕ RÀNG
+        // KIỂM TRA LỖI
         if (mode === "nhap") {
             const itemName = document.getElementById("form-item-name").value.trim(); 
             const contract = document.getElementById("form-contract").value.trim();
@@ -728,7 +743,7 @@
             }
         }
 
-        // 8.2 - NẾU KHÔNG CÓ LỖI -> XỬ LÝ LƯU THỰC TẾ
+        // LƯU THỰC TẾ
         let timeStr = new Date().toLocaleString('vi-VN');
         let currentDayStr = new Date().toISOString().substring(0, 10);
         if(!window.inventory[sourceKey]) { window.inventory[sourceKey] = []; }
@@ -837,9 +852,9 @@
         syncWithCloud("write");
     }
 
-    // 🟢 HÀM XÓA BƯỚC SNAPSHOT
+    // 🟢 HÀM XÓA BƯỚC SNAPSHOT (CẬP NHẬT PASS MỚI)
     window.deleteSpecificLogStep = function(targetIdx) {
-        let inputPass = prompt("Nhập mật khẩu quản trị viên để hoàn tác xóa bước (123456):");
+        let inputPass = prompt("Nhập mật khẩu quản trị viên để hoàn tác xóa bước:");
         if (inputPass !== ADMIN_PASSWORD) { alert("❌ Mật khẩu không chính xác!"); return; }
 
         let targetLog = window.logs[targetIdx];
@@ -865,7 +880,6 @@
         syncWithCloud("write");
     }
 
-    // 9. RENDER CÁC BẢNG BIỂU DỮ LIỆU
     function renderInventoryTable() {
         const tbody = document.getElementById("inventory-table-body"); tbody.innerHTML = "";
         let pivotData = {};
@@ -911,7 +925,6 @@
         });
     }
 
-    // 10. XUẤT EXCEL
     window.exportDataToExcel = function(type) {
         const fromDate = document.getElementById("excel-from-date").value; const toDate = document.getElementById("excel-to-date").value;
         if(!fromDate || !toDate) { alert("Vui lòng chọn đầy đủ mốc thời gian!"); return; }
@@ -939,7 +952,32 @@
         }
     }
 
-    // Bắt đầu ứng dụng
+    // Nút khôi phục lịch sử cũng áp dụng pass mới
+    function triggerWebBackupRollback() {
+        let input = prompt("Nhập mật khẩu quản trị viên để khôi phục lịch sử:"); 
+        if (input !== ADMIN_PASSWORD) { alert("❌ Sai mật khẩu!"); return; }
+        const selectBox = document.getElementById("backup-version-select"); selectBox.innerHTML = "<option>⌛ Đang tải lịch sử từ Google Cloud...</option>";
+        document.getElementById("backup-card").style.display = "block"; document.getElementById("action-card").style.display = "none";
+        db.collection("HistoryBackups").get().then((backSnap) => {
+            selectBox.innerHTML = ""; let keys = []; backSnap.forEach(doc => { keys.push(doc.id); }); keys.sort().reverse();
+            if(keys.length === 0) selectBox.innerHTML = "<option value='none'>Chưa có bản chụp kho nào</option>";
+            else keys.forEach(k => { selectBox.innerHTML += `<option value="${k}">Bản chụp ngày: ${k.replace(/-/g, "/")}</option>`; });
+        });
+    }
+
+    function executeRollback() {
+        const target = document.getElementById("backup-version-select").value; if(!target || target === "none") return;
+        if(confirm(`Xác nhận khôi phục toàn bộ số liệu kho về mốc ngày [${target.replace(/-/g, "/")}]?`)) {
+            db.collection("HistoryBackups").doc(target).get().then((docSnap) => {
+                if(docSnap.exists) {
+                    let rawInv = docSnap.data().inventoryRaw; window.inventory = rawInv ? JSON.parse(rawInv) : {};
+                    window.logs.unshift({ time: new Date().toLocaleString('vi-VN'), dateRaw: new Date().toISOString().substring(0, 10), action: "CHUYỂN VỊ TRÍ", pos: "HỆ THỐNG", name: "Phục hồi trạng thái kho lịch sử", customer: "Admin", qty: `Mốc ${target}` });
+                    syncWithCloud("write"); document.getElementById("backup-card").style.display = "none"; alert("🟢 Khôi phục thành công dữ liệu ngày: " + target.replace(/-/g, "/"));
+                }
+            });
+        }
+    }
+
     syncWithCloud("read");
 </script>
 </body>
