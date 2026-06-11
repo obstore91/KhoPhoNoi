@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Kho Bãi Cát Tường - Kế Toán Đám Mây Hoàn Chỉnh</title>
+    <style>
+        :root {
+            --primary: #2563eb; --primary-dark: #1d4ed8; --success: #16a34a; --danger: #dc2626; --warning: #d97706;
+            --gray-100: #f3f4f6; --gray-200: #e5e7eb; --gray-700: #374151; --special-bg: #fef3c7; --special-border: #f59e0b;
+            --purple: #7c3aed; --purple-light: #f3e8ff; --cyan: #06b6d4; --cyan-light: #ecfeff;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f0f2f5; color: #333; padding: 15px; }
+        .container { max-width: 100%; margin: 0 auto; }
+        header { background: white; padding: 15px 20px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        h1 { font-size: 22px; color: var(--primary); display: flex; align-items: center; gap: 10px; margin-bottom:5px; }
+        .actions-bar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+        .search-box { padding: 8px 15px; border: 2px solid var(--primary); border-radius: 6px; font-size: 13px; width: 220px; outline: none; }
+        button { border: none; padding: 10px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13px; transition: background 0.2s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-warning { background: var(--warning); color: white; }
+        .btn-purple { background: var(--purple); color: white; }
+        .btn-cyan { background: var(--cyan); color: white; }
+        .btn-dark { background: #1e293b; color: white; }
+        .btn-excel { background: #047857; color: white; }
+        .main-layout { display: grid; grid-template-columns: 2.2fr 1.3fr; gap: 15px; }
+        @media (max-width: 1350px) { .main-layout { grid-template-columns: 1fr; } }
+        .warehouse-selector { display: flex; gap: 10px; margin-bottom: 10px; }
+        .tab-btn { background: #e5e7eb; color: var(--gray-700); font-weight: bold; padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; }
+        .tab-btn.active { background: white; color: var(--primary); border-bottom: 3px solid var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .warehouse-map { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .map-title { font-size: 16px; font-weight: bold; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--gray-200); }
+        .grid-flex-container { display: flex; background: #fafafa; padding: 10px; border-radius: 8px; border: 2px dashed #ccc; gap: 8px; align-items: stretch; width: 100%; }
+        .main-rows-area { display: flex; flex-direction: column; gap: 10px; flex-grow: 1; width: 100%; }
+        .slots-row-layout { display: flex; gap: 4px; width: 100%; }
+        .hh-left-container { display: flex; gap: 4px; width: 100%; }
+        .standard-slots-part { display: flex; gap: 4px; flex: 13; }
+        .compartments-slots-part { display: flex; gap: 4px; flex: 4; }
+        
+        .slot { background: white; border: 1px solid var(--gray-200); border-radius: 5px; padding: 6px 4px; text-align: center; cursor: pointer; transition: all 0.2s; min-height: 125px; flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; }
+        .slot.search-fade { opacity: 0.15; transform: scale(0.96); }
+        .slot:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .slot.has-item { background: #eff6ff; border-color: #bfdbfe; }
+        .slot.has-customer-item { background: var(--purple-light); border-color: #d8b4fe; }
+        .slot.selected { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3); }
+        .slot.special-zone { background: var(--special-bg); border-color: var(--special-border); }
+        .slot.special-zone .slot-label { color: #9a3412; font-weight: bold; font-size: 9px; line-height: 1.1; margin-bottom: 2px; }
+        
+        .slot.sub-compartment { background: #f0fdf4; border-color: #4ade80; min-height: 125px; }
+        .slot.sub-compartment.has-customer-item { background: var(--purple-light); border-color: #d8b4fe; }
+        .slot.sub-compartment .slot-num { color: #16a34a; font-size: 8px; font-weight: 900; background: #e8f5e9; padding: 1px 0; border-radius: 3px; }
+        
+        .end-warehouse-block { width: 100px; background: #f3f4f6; border: 2px dashed #9ca3af; border-radius: 6px; display: flex; flex-direction: column; justify-content: space-between; padding: 8px 4px; text-align: center; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
+        .end-warehouse-block.has-item { background: #eff6ff; border-color: #bfdbfe; }
+        .end-warehouse-block.selected { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3); }
+        .end-warehouse-block.search-fade { opacity: 0.15; }
+        
+        .side-title { font-size: 12px; font-weight: bold; color: #4b5563; margin-bottom: 2px; }
+        .hallway-container { display: flex; align-items: center; gap: 6px; width: 100%; margin: 4px 0; }
+        .door-block { background: #1f2937; color: white; padding: 6px 10px; font-weight: bold; font-size: 11px; text-align: center; border-radius: 5px; border: 1px solid #4b5563; white-space: nowrap; }
+        .hallway { background: #e5e7eb; padding: 5px 10px; text-align: center; font-weight: bold; color: #71717a; border-radius: 4px; letter-spacing: 2px; font-size: 11px; border: 1px dashed #d1d5db; flex-grow: 1; white-space: nowrap; }
+        
+        .panel-right { display: flex; flex-direction: column; gap: 15px; }
+        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .card-title { font-size: 15px; font-weight: bold; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gray-100); padding-bottom: 5px; }
+        
+        .form-group { margin-bottom: 10px; }
+        .form-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 4px; color: var(--gray-700); }
+        .form-control { width: 100%; padding: 7px 10px; border: 1px solid var(--gray-200); border-radius: 6px; font-size: 13px; outline: none; }
+        .form-control:focus { border-color: var(--primary); }
+        .form-control:disabled { background: #f3f4f6; color: #6b7280; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        
+        .table-container { max-height: 280px; overflow-y: auto; border: 1px solid var(--gray-200); border-radius: 6px; margin-top: 5px; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
+        th, td { padding: 8px; border-bottom: 1px solid var(--gray-200); vertical-align: top; }
+        th { background: var(--gray-100); position: sticky; top: 0; font-weight: bold; z-index: 5; }
+        
+        .badge { padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; color: white; display: inline-block; }
+        .badge-nhap { background: var(--success); }
+        .badge-xuat { background: var(--danger); }
+        .badge-chuyen { background: var(--warning); }
+        .badge-giacong { background: var(--cyan); }
+        
+        .slot-num { font-size: 10px; color: #6b7280; font-weight: bold; text-align: left; border-bottom: 1px solid #f3f4f6; padding-bottom: 2px; }
+        .slot-items-list-container { display: flex; flex-direction: column; gap: 2px; margin-top: 3px; flex-grow: 1; text-align: left; justify-content: flex-start; overflow: hidden; }
+        .slot-item-row { display: flex; justify-content: space-between; font-size: 10px; font-weight: 600; line-height: 1.2; border-bottom: 1px dotted #e5e7eb; padding-bottom: 1px; color: #1e293b; }
+        .slot-item-row .qty-badge { color: var(--primary); font-weight: bold; margin-left: 3px; background: #e0f2fe; padding: 0 3px; border-radius: 3px; }
+        
+        .storage-status { font-size: 12px; color: var(--primary); font-weight: bold; }
+        .radio-group { display: flex; gap: 15px; margin: 5px 0 10px 0; }
+        .radio-label { display: flex; align-items: center; gap: 5px; font-size: 13px; font-weight: bold; cursor: pointer; }
+        
+        .lot-row-empty { color: #9ca3af; background-color: #f9fafb; opacity: 0.6; }
+        .lot-row-active { background-color: #f0fdf4; }
+        .item-group-header { background: #e0f2fe !important; font-weight: bold; color: #0369a1; font-size: 12px; }
+        .excel-box { display: flex; gap: 10px; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 12px; border-radius: 8px; margin-bottom: 15px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+        .excel-inputs { display: flex; gap: 10px; align-items: center; font-size: 13px; font-weight: bold; color: #065f46; }
+        
+        .multi-lot-table { width: 100%; border-collapse: collapse; margin-top: 5px; background: white; font-size: 12px; }
+        .multi-lot-table th { background: #f1f5f9; padding: 6px; font-weight: bold; text-align: left; }
+        .multi-lot-table td { padding: 6px; border-bottom: 1px solid #e2e8f0; }
+        .multi-lot-input { width: 70px; padding: 3px; border: 1px solid #cbd5e1; border-radius: 4px; text-align: right; outline: none; }
+        .btn-delete-log { background: #fee2e2; color: #b91c1c; font-size: 11px; padding: 3px 6px; border-radius: 4px; font-weight: bold; border: 1px solid #fca5a5; cursor: pointer; }
+        
+        .giacong-box { border: 2px dashed var(--cyan); padding: 10px; border-radius: 8px; background: var(--cyan-light); margin-bottom: 10px; }
+        .giacong-box h4 { font-size: 13px; color: #0891b2; margin-bottom: 8px; border-bottom: 1px solid #a5f3fc; padding-bottom: 4px; }
+        .output-row { display: flex; gap: 8px; margin-bottom: 5px; align-items: center; }
+    </style>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div>
+            <h1>📦 Hệ Thống Kho Cát Tường - Kế Toán Đám Mây</h1>
+            <p id="save-indicator" class="storage-status">🔄 Đang tải đám mây Google...</p>
+        </div>
+        <div class="actions-bar">
+            <input type="text" id="search-input" class="search-box" placeholder="🔍 Tìm Mã hàng, Số HĐ..." oninput="handleSearch()">
+            <!-- NÚT LÀM MỚI Ở ĐÂY ĐÃ ĐƯỢC TÔ ĐẬM VÀ RẤT RÕ RÀNG -->
+            <button class="btn-primary" style="background:#0284c7; box-shadow: 0 2px 4px rgba(0,0,0,0.2);" onclick="syncWithCloud('read')">🔄 Làm Mới Dữ Liệu</button>
+            <button class="btn-dark" onclick="triggerWebBackupRollback()">⏪ Khôi Phục Lịch Sử</button>
+        </div>
+    </header>
+
+    <div class="excel-box">
+        <div class="excel-inputs">
+            <span>📅 KHOẢNG THỜI GIAN BÁO CÁO:</span>
+            <label>Từ ngày:</label>
+            <input type="date" id="excel-from-date" class="form-control" style="width:140px; padding:4px 8px;">
+            <label>Đến ngày:</label>
+            <input type="date" id="excel-to-date" class="form-control" style="width:140px; padding:4px 8px;">
+        </div>
+        <div style="display:flex; gap:8px;">
+            <button class="btn-excel" onclick="exportDataToExcel('tonghop')">📊 Xuất Báo Cáo Xuất-Nhập-Tồn</button>
+            <button class="btn-excel" style="background:#065f46;" onclick="exportDataToExcel('chitiet')">📋 Xuất Sổ Chi Tiết Kho</button>
+        </div>
+    </div>
+
+    <div class="main-layout">
+        <!-- BÊN TRÁI -->
+        <div>
+            <div class="warehouse-selector">
+                <button class="tab-btn active" id="btn-kho-sx" onclick="switchWarehouse('Kho sản xuất')">🏭 KHO SẢN XUẤT</button>
+                <button class="tab-btn" id="btn-kho-hh" onclick="switchWarehouse('Kho hàng hóa')">📦 KHO HÀNG HÓA</button>
+            </div>
+            
+            <div class="warehouse-map">
+                <div class="map-title" id="current-warehouse-title">Sơ đồ kiến trúc toàn cảnh</div>
+                <div class="grid-flex-container">
+                    <div class="main-rows-area">
+                        <div>
+                            <div class="side-title">⬅️ DÃY TRÁI</div>
+                            <div id="left-row-wrapper"></div>
+                        </div>
+                        <div class="hallway-container">
+                            <div class="door-block" id="door-label"></div>
+                            <div class="hallway" id="hallway-line"></div>
+                        </div>
+                        <div>
+                            <div class="side-title">➡️ DÃY PHẢI</div>
+                            <div class="slots-row-layout" id="grid-right"></div>
+                        </div>
+                    </div>
+                    <div id="end-merged-block" class="end-warehouse-block" style="display: none;"></div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 15px;">
+                <div class="card-title">📜 Nhật Ký Hoạt Động Xuất Nhập Chi Tiết</div>
+                <div class="table-container" style="max-height: 300px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 130px;">Thời Gian</th>
+                                <th style="width: 80px;">Hành Động</th>
+                                <th style="width: 110px;">Vị Trí</th>
+                                <th>Thông Tin Hàng & Số HĐ / Số Lô</th>
+                                <th style="width: 80px; text-align: right;">Số Lượng</th>
+                                <th style="width: 90px; text-align: center;">Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- BÊN PHẢI -->
+        <div class="panel-right">
+            <div class="card" id="detail-card" style="border: 1px solid var(--primary);">
+                <div class="card-title" style="color: var(--primary);">
+                    🔍 Chi Tiết Các Mã Hàng Tại Ô Kho
+                    <!-- Thêm 1 nút làm mới thu nhỏ ở đây cho tiện -->
+                    <button class="btn-primary" style="padding: 4px 8px; font-size: 11px;" onclick="syncWithCloud('read')">🔄 Tải Lại</button>
+                </div>
+                <div id="detail-content"><p style="color: #666; font-style: italic;">Bấm chọn một ô trên sơ đồ bãi kho để xem chi tiết danh sách từng mã hàng.</p></div>
+            </div>
+
+            <!-- FORM CHÍNH -->
+            <div class="card" id="action-card" style="display:none; border: 2px solid #2563eb;">
+                <div class="card-title" id="action-title">Thao tác kho</div>
+                <!-- BỎ ONSUBMIT TRUYỀN THỐNG ĐỂ TRÁNH LỖI HTML5 HIDDEN FIELDS -->
+                <form id="warehouse-form">
+                    <input type="hidden" id="form-mode">
+                    
+                    <div class="form-row">
+                        <div class="form-group"><label>Kho đang chọn</label><input type="text" id="form-wh" class="form-control" readonly style="background:#f3f4f6;"></div>
+                        <div class="form-group"><label>Dãy</label><input type="text" id="form-side" class="form-control" readonly style="background:#f3f4f6;"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Tên ô kho chọn</label><input type="text" id="form-slot-num" class="form-control" readonly style="background:#e5e7eb; font-weight:bold; color:var(--primary);"></div>
+                    </div>
+
+                    <!-- NHẬP HÀNG -->
+                    <div id="nhap-info-fields" style="display:none; background: #f0fdf4; padding: 10px; border-radius: 6px; border: 1px solid #bbf7d0; margin-bottom: 10px;">
+                        <p style="font-weight:bold; font-size:12px; color:var(--success); margin-bottom:6px;">📋 Chi tiết khai báo Lô Nhập Hàng:</p>
+                        
+                        <!-- CHỌN LOẠI HÀNG -->
+                        <div class="form-group">
+                            <label>Phân loại hàng hóa *</label>
+                            <select id="form-item-type" class="form-control" onchange="toggleLengthInput()">
+                                <option value="normal">📦 Hàng hóa thông thường</option>
+                                <option value="cach_nhiet">📏 Hàng cách nhiệt (Dạng cuộn/mét)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Mã hàng / Tên sản phẩm *</label>
+                                <input type="text" id="form-item-name" class="form-control" placeholder="Ví dụ: Bông, xốp, nhôm...">
+                            </div>
+                            <!-- Ô SỐ MÉT/CUỘN -->
+                            <div class="form-group" id="length-input-wrapper" style="display:none;">
+                                <label style="color:var(--danger);">Số mét dài / 1 Cuộn *</label>
+                                <input type="number" id="form-item-length" class="form-control" min="0" step="0.1" placeholder="Ví dụ: 30">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group"><label>Số Hợp Đồng / Số Lô *</label><input type="text" id="form-contract" class="form-control" placeholder="Ví dụ: HD-01"></div>
+                            <div class="form-group"><label>Ngày thực tế *</label><input type="date" id="form-date-action" class="form-control"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label id="label-qty-nhap">Số lượng nhập (Cuộn/Cái) *</label><input type="number" id="form-qty-nhap" class="form-control" min="1"></div>
+                            <div class="form-group"><label>Tên đối tác bán</label><input type="text" id="form-customer" class="form-control"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Hạn mức cảnh báo ô</label><input type="number" id="form-min-limit" class="form-control" min="0" value="0"></div>
+                            <div class="form-group"><label>Hạn sử dụng (nếu có)</label><input type="date" id="form-expiry-date" class="form-control"></div>
+                        </div>
+                        <div class="form-group"><label>Ghi chú chi tiết</label><input type="text" id="form-note" class="form-control"></div>
+                    </div>
+
+                    <!-- DANH SÁCH LÔ GỐC -->
+                    <div id="select-lot-wrapper" style="display:none; background:#fffbf0; padding:10px; border-radius:6px; border:1px solid #fef08a; margin-bottom:10px;">
+                        <label id="select-lot-title" style="font-weight:bold; font-size:12px; color:var(--warning); display:block; margin-bottom:5px;">📍 Nhập số lượng lấy ra tại các lô tương ứng bên dưới:</label>
+                        <div style="max-height:180px; overflow-y:auto; border:1px solid #cbd5e1; border-radius:4px;">
+                            <table class="multi-lot-table">
+                                <thead>
+                                    <tr>
+                                        <th>Mã Hàng (HĐ)</th>
+                                        <th>Tồn bãi</th>
+                                        <th style="width:80px; text-align:right;">Số lấy</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="multi-lot-list-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- GIA CÔNG / CẮT GHÉP ĐẦU RA -->
+                    <div id="giacong-output-fields" style="display:none;" class="giacong-box">
+                        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid #a5f3fc; margin-bottom:8px; padding-bottom:4px;">
+                            <h4 style="border:none; margin:0; padding:0;">✂️ KHAI BÁO HÀNG ĐẦU RA SAU CẮT/GHÉP</h4>
+                            <div id="gc-summary" style="font-size:11px; color:var(--danger); font-weight:bold; background:#fee2e2; padding:3px 6px; border-radius:4px;">Hao hụt / Tặng khách: 0m</div>
+                        </div>
+
+                        <div id="output-rows-container">
+                            <div class="output-row">
+                                <input type="text" class="form-control gc-name" placeholder="Tên mã ra (VD: Xốp)" style="flex:2; margin-bottom:0;">
+                                <input type="number" class="form-control gc-qty" placeholder="Cuộn" min="1" style="flex:1; margin-bottom:0;" oninput="calculateGiaCong()">
+                                <input type="number" class="form-control gc-len" placeholder="Mét/Cuộn" step="0.1" style="flex:1; margin-bottom:0;" oninput="calculateGiaCong()">
+                            </div>
+                            <div class="output-row">
+                                <input type="text" class="form-control gc-name" placeholder="Tên mã ra (VD: Vụn)" style="flex:2; margin-bottom:0;">
+                                <input type="number" class="form-control gc-qty" placeholder="Cuộn" min="1" style="flex:1; margin-bottom:0;" oninput="calculateGiaCong()">
+                                <input type="number" class="form-control gc-len" placeholder="Mét/Cuộn" step="0.1" style="flex:1; margin-bottom:0;" oninput="calculateGiaCong()">
+                            </div>
+                        </div>
+                        <div style="margin-top:8px;">
+                            <label style="font-size:11px; font-weight:bold; color:#0891b2;">📍 Cất hàng sau khi cắt ghép vào đâu?</label>
+                            <div class="form-row">
+                                <select id="gc-dest-wh" class="form-control" style="margin-bottom:0;"><option value="Kho sản xuất">Kho sản xuất</option><option value="Kho hàng hóa">Kho hàng hóa</option></select>
+                                <select id="gc-dest-side" class="form-control" style="margin-bottom:0;"><option value="Dãy Trái">Dãy Trái</option><option value="Dãy Phải">Dãy Phải</option></select>
+                            </div>
+                            <input type="text" id="gc-dest-slot" class="form-control" placeholder="Tên ô đích (VD: 3 hoặc Khoang 1)" style="margin-top:5px;">
+                        </div>
+                    </div>
+
+                    <!-- CHUYỂN VỊ TRÍ -->
+                    <div id="transfer-destination" style="display: none; border-top: 1px solid #eee; padding-top: 10px; margin-bottom: 10px;">
+                        <p style="font-weight: bold; font-size: 13px; color: var(--primary); margin-bottom: 8px;">📍 Ô ĐÍCH ĐẾN CHUYỂN VỊ TRÍ:</p>
+                        <div class="form-row">
+                            <select id="dest-wh" class="form-control"><option value="Kho sản xuất">Kho sản xuất</option><option value="Kho hàng hóa">Kho hàng hóa</option></select>
+                            <select id="dest-side" class="form-control"><option value="Dãy Trái">Dãy Trái</option><option value="Dãy Phải">Dãy Phải</option></select>
+                        </div>
+                        <div class="form-group" style="margin-top:5px;"><label>Tên ô đích chính xác (Ví dụ: 5 hoặc Khoang 2)</label><input type="text" id="dest-slot-num" class="form-control"></div>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: 15px;">
+                        <!-- ĐỔI TỪ type="submit" SANG type="button" ĐỂ CHỐNG LỖI CÂM NÚT -->
+                        <button type="button" id="btn-submit-form" class="btn-primary" style="flex: 1; justify-content: center;" onclick="submitWarehouseForm()">Xác Nhận</button>
+                        <button type="button" onclick="hideActionCard()" style="background: var(--gray-200); color: black; padding: 10px 15px; border-radius: 6px; font-weight: bold; border: none; cursor: pointer;">Hủy</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- BẢNG THỐNG KÊ PIVOT -->
+            <div class="card">
+                <div class="card-title">📊 Bảng Tổng Hợp Hàng Hóa Theo Vị Trí Ô Kho</div>
+                <div class="table-container" style="max-height: 380px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>📍 Vị Trí Ô Kho</th>
+                                <th>📦 Mã Hàng Hóa</th>
+                                <th style="text-align:right; color:var(--primary);">🏭 Tồn Kho Công Ty</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventory-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 1. CẤU HÌNH FIREBASE
+    const firebaseConfig = {
+        apiKey: "AIzaSyAlB5eqC8w95BVfRvhTMoG_L8bsMEU8iA4",
+        authDomain: "quanlykhocattuong.firebaseapp.com",
+        projectId: "quanlykhocattuong",
+        storageBucket: "quanlykhocattuong.firebasestorage.app",
+        messagingSenderId: "263133775275",
+        appId: "1:263133775275:web:b3fb13e0408c61ae68beee"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const ADMIN_PASSWORD = "123456";
+
+    // 2. BIẾN TOÀN CỤC
+    window.currentWarehouse = "Kho sản xuất"; 
+    window.selectedSlotKey = null;
+    window.inventory = {}; 
+    window.logs = []; 
+    window.searchQuery = "";
+
+    const SPECIAL_LABELS = {
+        "Kho sản xuất": { "Dãy Phải_1": "🏠 Nhà Vệ Sinh", "Dãy Trái_4": "⚡ Máy Cách Nhiệt 1", "Dãy Trái_5": "⚡ Máy Cách Nhiệt 1", "Dãy Trái_6": "⚡ Máy Cách Nhiệt 2", "Dãy Trái_7": "⚡ Máy Cách Nhiệt 2", "Dãy Trái_9": "⚡ Máy Cách Nhiệt 3", "Dãy Trái_10": "⚙️ Máy SX Lưới" },
+        "Kho hàng hóa": { "Dãy Phải_1": "🏢 Văn Phòng", "Dãy Trái_1": "🍽️ Nhà Ăn", "Dãy Phải_2": "🚪 Cửa Số 1", "Dãy Phải_8": "🚪 Cửa Số 2", "Dãy Phải_13": "🚪 Cửa Số 3" }
+    };
+    const COMPARTMENTS_LIST = ["Khoang 1", "Khoang 2", "Khoang 3", "Khoang 4", "Khoang 5", "Khoang 6", "Khoang 7", "Khoang 8"];
+
+    let d = new Date();
+    document.getElementById("excel-from-date").value = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-01`;
+    document.getElementById("excel-to-date").value = d.toISOString().substring(0, 10);
+
+    // HÀM FORMAT TÊN (TỰ ĐỘNG THÊM MET VÀO TÊN NẾU LÀ CÁCH NHIỆT)
+    function formatItemName(lot) {
+        if (lot.itemType === 'cach_nhiet' && lot.lengthPerRoll) {
+            return `${lot.name} [Cuộn ${lot.lengthPerRoll}m]`;
+        }
+        return lot.name;
+    }
+
+    // TOGGLE Ô NHẬP MÉT
+    function toggleLengthInput() {
+        const type = document.getElementById("form-item-type").value;
+        const wrapper = document.getElementById("length-input-wrapper");
+        const qtyLabel = document.getElementById("label-qty-nhap");
+
+        if (type === "cach_nhiet") {
+            wrapper.style.display = "block";
+            qtyLabel.innerText = "Số lượng nhập (Cuộn) *";
+        } else {
+            wrapper.style.display = "none";
+            document.getElementById("form-item-length").value = "";
+            qtyLabel.innerText = "Số lượng nhập (Cái/Cuộn) *";
+        }
+    }
+
+    // HÀM TÍNH TOÁN HAO HỤT CẮT GHÉP
+    window.calculateGiaCong = function() {
+        const inputs = document.querySelectorAll(".multi-lot-input");
+        const sourceKey = `${document.getElementById("form-wh").value}_${document.getElementById("form-side").value}_${document.getElementById("form-slot-num").value.trim()}`;
+        
+        let totalInputMeters = 0;
+        inputs.forEach(input => {
+            let taken = parseInt(input.value) || 0;
+            let idx = parseInt(input.getAttribute("data-idx"));
+            if (taken > 0 && window.inventory[sourceKey]) {
+                let lot = window.inventory[sourceKey][idx];
+                if(lot.itemType === 'cach_nhiet' && lot.lengthPerRoll) {
+                    totalInputMeters += (taken * parseFloat(lot.lengthPerRoll));
+                }
+            }
+        });
+
+        let totalOutputMeters = 0;
+        const qties = document.querySelectorAll(".gc-qty");
+        const lens = document.querySelectorAll(".gc-len");
+        for(let i=0; i<qties.length; i++) {
+            let q = parseInt(qties[i].value) || 0;
+            let l = parseFloat(lens[i].value) || 0;
+            totalOutputMeters += (q * l);
+        }
+
+        const summaryDiv = document.getElementById("gc-summary");
+        if (totalInputMeters > 0) {
+            let diff = totalInputMeters - totalOutputMeters;
+            summaryDiv.innerText = `Hao hụt / Tặng khách: ${diff}m`;
+        } else {
+            summaryDiv.innerText = `Không có mét gốc`;
+        }
+    }
+
+    // 3. KẾT NỐI VÀ ĐỒNG BỘ DỮ LIỆU
+    function syncWithCloud(actionType = "read") {
+        const indicator = document.getElementById("save-indicator");
+        indicator.innerText = "⏳ Đang kết nối Đám mây Google...";
+        indicator.style.color = "#d97706";
+        const docRef = db.collection("CoreDatabase").doc("WarehouseMain");
+
+        if (actionType === "write") {
+            let flatInv = JSON.stringify(window.inventory);
+            let flatLogs = JSON.stringify(window.logs);
+            docRef.set({ inventoryRaw: flatInv, logsRaw: flatLogs }).then(() => {
+                indicator.innerText = "🟢 Đồng bộ lưu trữ thành công!";
+                indicator.style.color = "var(--success)";
+            });
+        } else {
+            docRef.get().then((docSnap) => {
+                if (docSnap.exists) {
+                    let rData = docSnap.data();
+                    window.inventory = rData.inventoryRaw ? JSON.parse(rData.inventoryRaw) : {};
+                    window.logs = rData.logsRaw ? JSON.parse(rData.logsRaw) : [];
+                }
+                indicator.innerText = "🟢 Đã tải dữ liệu thời gian thực!";
+                indicator.style.color = "var(--success)";
+                
+                renderWarehouseMap();
+                renderHistoryTable();
+                if(window.selectedSlotKey) { 
+                    let p = window.selectedSlotKey.split("_"); 
+                    showDetailPanel(p[1], p[2], `Ô ${p[2]}`); 
+                }
+            });
+        }
+    }
+
+    // 4. TIỆN ÍCH GIAO DIỆN
+    window.handleSearch = () => { window.searchQuery = document.getElementById("search-input").value.trim().toLowerCase(); renderWarehouseMap(); };
+    window.switchWarehouse = (whName) => { window.currentWarehouse = whName; document.getElementById("btn-kho-sx").className = whName === "Kho sản xuất" ? "tab-btn active" : "tab-btn"; document.getElementById("btn-kho-hh").className = whName === "Kho hàng hóa" ? "tab-btn active" : "tab-btn"; window.selectedSlotKey = null; renderWarehouseMap(); document.getElementById("detail-content").innerHTML = `<p style="color: #666; font-style: italic;">Đã chuyển sang sơ đồ ${whName}. Ấn chọn ô để xem chi tiết.</p>`; };
+    window.hideActionCard = () => { document.getElementById("action-card").style.display = "none"; document.getElementById("warehouse-form").reset(); };
+    function formatDateDisplay(dStr) { if(!dStr) return ""; let p = dStr.split("-"); return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : dStr; }
+
+    function generateSlotItemsHtml(lots) {
+        let activeLots = lots.filter(l => l.qty > 0);
+        if(activeLots.length === 0) return `<div class="slot-items-list-container"></div>`;
+        let grouped = {};
+        activeLots.forEach(lot => {
+            let displayName = formatItemName(lot);
+            if(!grouped[displayName]) { grouped[displayName] = { qty: 0 }; }
+            grouped[displayName].qty += lot.qty;
+        });
+        let html = `<div class="slot-items-list-container">`;
+        for (const [name, data] of Object.entries(grouped)) {
+            html += `<div class="slot-item-row" title="${name}"><span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:70%;">${name}</span><span class="qty-badge">${data.qty}</span></div>`;
+        }
+        html += `</div>`;
+        return html;
+    }
+
+    // 5. VẼ SƠ ĐỒ KHO
+    function createNormalSlot(side, num) {
+        const labelKey = `${side}_${num}`; const specialName = SPECIAL_LABELS[window.currentWarehouse]?.[labelKey]; const fullKey = `${window.currentWarehouse}_${side}_${num}`; const lots = window.inventory[fullKey] || [];
+        const slotDiv = document.createElement("div"); slotDiv.className = `slot ${specialName ? 'special-zone' : ''} ${window.selectedSlotKey === fullKey ? 'selected' : ''}`;
+        
+        let activeLots = lots.filter(l => l.qty > 0);
+        if(activeLots.length > 0) { slotDiv.classList.add("has-item"); }
+        if(window.searchQuery && !lots.some(l => formatItemName(l).toLowerCase().includes(window.searchQuery) || l.contract.toLowerCase().includes(window.searchQuery))) {
+            slotDiv.classList.add("search-fade");
+        }
+        
+        slotDiv.onclick = () => { 
+            window.selectedSlotKey = fullKey; 
+            renderWarehouseMap(); 
+            showDetailPanel(side, num, specialName || `Ô số ${num}`); 
+            if(document.getElementById("action-card").style.display === "block") openQuickForm(document.getElementById("form-mode").value, side, num); 
+        };
+        slotDiv.innerHTML = `<div class="slot-num">Ô ${num}</div>${specialName ? '<div class="slot-label">'+specialName+'</div>' : ''}${generateSlotItemsHtml(lots)}`;
+        return slotDiv;
+    }
+
+    function createCompartmentSlot(compName) {
+        const fullKey = `${window.currentWarehouse}_Dãy Trái_${compName}`; const lots = window.inventory[fullKey] || [];
+        const slotDiv = document.createElement("div"); slotDiv.className = `slot sub-compartment ${window.selectedSlotKey === fullKey ? 'selected' : ''}`;
+        let activeLots = lots.filter(l => l.qty > 0);
+        if(activeLots.length > 0) { slotDiv.classList.add("has-item"); }
+        if (window.searchQuery && !lots.some(l => formatItemName(l).toLowerCase().includes(window.searchQuery) || l.contract.toLowerCase().includes(window.searchQuery))) slotDiv.classList.add("search-fade");
+        
+        slotDiv.onclick = () => { 
+            window.selectedSlotKey = fullKey; renderWarehouseMap(); showDetailPanel("Dãy Trái", compName, `📍 ${compName}`); 
+            if(document.getElementById("action-card").style.display === "block") openQuickForm(document.getElementById("form-mode").value, "Dãy Trái", compName); 
+        };
+        slotDiv.innerHTML = `<div class="slot-num">${compName.replace("Khoang ", "Kh ")}</div>${generateSlotItemsHtml(lots)}`;
+        return slotDiv;
+    }
+
+    function renderWarehouseMap() {
+        document.getElementById("current-warehouse-title").innerText = `Sơ đồ kiến trúc bãi kho: ${window.currentWarehouse}`;
+        const leftRowWrapper = document.getElementById("left-row-wrapper"); const gridRight = document.getElementById("grid-right"); const endBlock = document.getElementById("end-merged-block"); const hallwayLine = document.getElementById("hallway-line"); const doorLabel = document.getElementById("door-label");
+        leftRowWrapper.innerHTML = ""; gridRight.innerHTML = "";
+
+        if (window.currentWarehouse === "Kho sản xuất") {
+            endBlock.style.display = "flex"; doorLabel.innerText = "🚪 CỬA KHO SX"; hallwayLine.innerText = "🚶 LỐI ĐI NỘI BỘ KHO ➜ ➜ ➜";
+            const normalRow = document.createElement("div"); normalRow.className = "slots-row-layout";
+            for(let i = 1; i <= 15; i++) normalRow.appendChild(createNormalSlot("Dãy Trái", i));
+            leftRowWrapper.appendChild(normalRow);
+            for(let i = 1; i <= 15; i++) gridRight.appendChild(createNormalSlot("Dãy Phải", i));
+            
+            const fullKey = "Kho sản xuất_Chung_Ô16-17"; const lots = window.inventory[fullKey] || [];
+            endBlock.className = `end-warehouse-block ${window.selectedSlotKey === fullKey ? 'selected' : ''}`;
+            if(lots.filter(l => l.qty > 0).length > 0) endBlock.classList.add("has-item");
+            if (window.searchQuery && !lots.some(l => formatItemName(l).toLowerCase().includes(window.searchQuery))) endBlock.classList.add("search-fade");
+            endBlock.onclick = () => { window.selectedSlotKey = fullKey; renderWarehouseMap(); showDetailPanel("Chung", "Ô16-17", "🗑️ Kho Phế Phẩm & Hàng Tồn Cuối"); if(document.getElementById("action-card").style.display === "block") openQuickForm(document.getElementById("form-mode").value, "Chung", "Ô16-17"); };
+            endBlock.innerHTML = `<div class="slot-num">CUỐI DÃY</div><div style="font-weight:bold; font-size:10px; color:#ef4444;">🗑️ Phế Phẩm</div>${generateSlotItemsHtml(lots)}`;
+        } else {
+            endBlock.style.display = "none"; doorLabel.innerText = "🚪 CỬA GIỮA CHÍNH"; hallwayLine.innerText = "🚶 LỐI ĐI TRUNG TÂM PHÂN HAI DÃY KHU HÀNG HÓA ➜ ➜ ➜";
+            const hhLeftContainer = document.createElement("div"); hhLeftContainer.className = "hh-left-container";
+            const standardPart = document.createElement("div"); standardPart.className = "standard-slots-part";
+            for(let i = 1; i <= 13; i++) standardPart.appendChild(createNormalSlot("Dãy Trái", i));
+            hhLeftContainer.appendChild(standardPart);
+            const compsPart = document.createElement("div"); compsPart.className = "compartments-slots-part";
+            COMPARTMENTS_LIST.forEach(compName => { compsPart.appendChild(createCompartmentSlot(compName)); });
+            hhLeftContainer.appendChild(compsPart); leftRowWrapper.appendChild(hhLeftContainer);
+            for(let i = 1; i <= 17; i++) gridRight.appendChild(createNormalSlot("Dãy Phải", i));
+        }
+        renderInventoryTable();
+    }
+
+    // 6. BẢNG CHI TIẾT Ô KHO
+    function showDetailPanel(side, num, displayName) {
+        const lots = window.inventory[window.selectedSlotKey] || []; const detailContent = document.getElementById("detail-content");
+        let headerHtml = `<div style="background:#f8fafc; padding:10px; border-radius:6px; margin-bottom:10px; border-left:4px solid var(--primary);"><p>📍 <b>${window.currentWarehouse}</b> ➜ Khu vực: <b>${side}</b></p><p style="font-size:13px; color:var(--primary); font-weight:bold; margin-top:2px;">📌 Vị trí ô: ${displayName}</p></div>`;
+
+        if (lots.length > 0 && lots.some(l => l.qty > 0)) {
+            let itemGroups = {};
+            lots.forEach((lot, idx) => { 
+                let dName = formatItemName(lot);
+                if(!itemGroups[dName]) itemGroups[dName] = []; 
+                itemGroups[dName].push({ ...lot, originalIndex: idx }); 
+            });
+            let tableBodyHtml = "";
+            for (const [itemName, groupLots] of Object.entries(itemGroups)) {
+                let totalGroupQty = groupLots.reduce((s, l) => s + l.qty, 0);
+                if(totalGroupQty <= 0) continue;
+                tableBodyHtml += `<tr class="item-group-header"><td colspan="2">📦 <b>${itemName}</b></td><td style="text-align:right;">Tổng: ${totalGroupQty}</td></tr>`;
+                groupLots.forEach(lot => {
+                    if (lot.qty <= 0) return;
+                    let noteText = lot.note ? `<br><span style="color:#6b7280; font-style:italic; font-size:10px;">📝 Ghi chú: ${lot.note}</span>` : "";
+                    tableBodyHtml += `<tr class="lot-row-active"><td style="padding-left:15px;">📜 HĐ/Lô: <b>${lot.contract}</b>${noteText}</td><td>${formatDateDisplay(lot.dateAction)}</td><td style="font-size:13px; font-weight:bold; text-align:right; color:#1e293b;">${lot.qty}</td></tr>`;
+                });
+            }
+            detailContent.innerHTML = headerHtml + `<div class="table-container" style="max-height:300px;"><table><thead><tr><th>Chi Tiết Lô</th><th>Ngày Nhập</th><th style="text-align:right;">Số Lượng</th></tr></thead><tbody>${tableBodyHtml}</tbody></table></div>
+            <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top: 12px;">
+                <button class="btn-success" style="padding:8px; font-size:12px; flex:1;" onclick="openQuickForm('nhap', '${side}', '${num}')">➕ Nhập</button>
+                <button class="btn-danger" style="padding:8px; font-size:12px; flex:1;" onclick="openQuickForm('xuat', '${side}', '${num}')">➖ Xuất</button>
+                <button class="btn-warning" style="padding:8px; font-size:12px; flex:1;" onclick="openQuickForm('chuyen', '${side}', '${num}')">🔄 Chuyển</button>
+                <button class="btn-cyan" style="padding:8px; font-size:12px; flex:1;" onclick="openQuickForm('giacong', '${side}', '${num}')">✂️ Cắt/Ghép</button>
+            </div>`;
+        } else {
+            detailContent.innerHTML = headerHtml + `<div style="background:#fff; padding:20px; border-radius:6px; border:1px dashed #ccc; text-align:center;"><p style="color:#aaa; font-style:italic; font-size:13px;">(Ô trống - Chưa có mã hàng)</p></div><button class="btn-primary" style="width:100%; justify-content:center; margin-top:12px;" onclick="openQuickForm('nhap', '${side}', '${num}')">➕ Khai báo nhập hàng vào đây</button>`;
+        }
+    }
+
+    // 7. MỞ FORM VÀ LOAD CÁC TRƯỜNG DỮ LIỆU
+    window.openActionModal = function(mode) {
+        if(!window.selectedSlotKey) { alert("Vui lòng click chọn 1 ô kho cụ thể trên sơ đồ trước!"); return; }
+        const p = window.selectedSlotKey.split("_");
+        openQuickForm(mode, p[1], p[2]);
+    }
+
+    window.openQuickForm = function(mode, side, num) {
+        document.getElementById("action-card").style.display = "block"; 
+        document.getElementById("form-mode").value = mode;
+
+        // Tắt hết các khu vực
+        document.getElementById("nhap-info-fields").style.display = "none";
+        document.getElementById("select-lot-wrapper").style.display = "none";
+        document.getElementById("transfer-destination").style.display = "none";
+        document.getElementById("giacong-output-fields").style.display = "none";
+
+        let btn = document.getElementById("btn-submit-form");
+
+        if(mode === "nhap") {
+            document.getElementById("action-title").innerText = "➕ NHẬP HÀNG MỚI VÀO Ô KHO"; 
+            btn.className = "btn-success"; btn.innerText = "Xác Nhận Nhập Kho";
+            document.getElementById("nhap-info-fields").style.display = "block";
+            document.getElementById("form-date-action").value = new Date().toISOString().substring(0, 10);
+            toggleLengthInput(); 
+        } 
+        else if(mode === "xuat") {
+            document.getElementById("action-title").innerText = "➖ XUẤT LÔ HÀNG"; 
+            btn.className = "btn-danger"; btn.innerText = "Xác Nhận Xuất Bãi";
+            document.getElementById("select-lot-wrapper").style.display = "block";
+            document.getElementById("select-lot-title").innerText = "📍 Nhập số lượng muốn lấy ra để xuất đi:";
+        } 
+        else if (mode === "chuyen") {
+            document.getElementById("action-title").innerText = "🔄 CHUYỂN VỊ TRÍ HÀNG"; 
+            btn.className = "btn-warning"; btn.innerText = "Xác Nhận Chuyển Ô";
+            document.getElementById("select-lot-wrapper").style.display = "block";
+            document.getElementById("transfer-destination").style.display = "block";
+            document.getElementById("select-lot-title").innerText = "📍 Nhập số lượng muốn bốc đi chuyển ô khác:";
+        }
+        else if (mode === "giacong") {
+            document.getElementById("action-title").innerText = "✂️ GIA CÔNG: CẮT & GHÉP HÀNG"; 
+            btn.className = "btn-cyan"; btn.innerText = "Xác Nhận Cắt/Ghép";
+            document.getElementById("select-lot-wrapper").style.display = "block";
+            document.getElementById("giacong-output-fields").style.display = "block";
+            document.getElementById("select-lot-title").innerText = "📍 BƯỚC 1: ĐẦU VÀO - Chọn các cuộn hàng cần đem đi cắt/ghép:";
+            
+            document.querySelectorAll(".gc-name").forEach(el => el.value = "");
+            document.querySelectorAll(".gc-qty").forEach(el => el.value = "");
+            document.querySelectorAll(".gc-len").forEach(el => el.value = "");
+            document.getElementById("gc-summary").innerText = "Hao hụt / Tặng khách: 0m";
+        }
+
+        // Tải danh sách lô gốc
+        document.getElementById("form-wh").value = window.currentWarehouse; document.getElementById("form-side").value = side; document.getElementById("form-slot-num").value = num;
+        const key = `${window.currentWarehouse}_${side}_${num}`; const lots = window.inventory[key] || [];
+        
+        if(mode !== "nhap") {
+            const listBody = document.getElementById("multi-lot-list-body");
+            listBody.innerHTML = "";
+            let activeLots = lots.filter(l => l.qty > 0);
+            
+            if(activeLots.length === 0) {
+                listBody.innerHTML = "<tr><td colspan='4' style='text-align:center;color:#aaa;padding:10px;'>Ô kho này trống, không có hàng để thao tác!</td></tr>";
+            } else {
+                lots.forEach((lot, idx) => {
+                    if(lot.qty > 0) {
+                        listBody.innerHTML += `
+                            <tr>
+                                <td><b>${formatItemName(lot)}</b><br><small style="font-family:monospace;color:#64748b;">HĐ: ${lot.contract}</small></td>
+                                <td style="font-weight:bold;color:#1e293b;">${lot.qty}</td>
+                                <td>
+                                    <input type="number" class="multi-lot-input" data-idx="${idx}" min="0" max="${lot.qty}" placeholder="0" oninput="validateMaxLotInput(this, ${lot.qty}); calculateGiaCong()">
+                                </td>
+                            </tr>
+                        `;
+                    }
+                });
+            }
+        }
+    }
+
+    window.validateMaxLotInput = function(input, maxVal) {
+        let val = parseInt(input.value) || 0;
+        if (val < 0) input.value = 0;
+        if (val > maxVal) { alert(`Lô này chỉ còn tồn tối đa ${maxVal} sản phẩm!`); input.value = maxVal; }
+    }
+
+    // 8. LOGIC KIỂM TRA LỖI THỦ CÔNG & LƯU TRỮ (GIẢI PHÁP CHỐNG "ĐƠ" NÚT)
+    window.submitWarehouseForm = function() {
+        const mode = document.getElementById("form-mode").value;
+        const wh = document.getElementById("form-wh").value; 
+        const side = document.getElementById("form-side").value; 
+        const slotNum = document.getElementById("form-slot-num").value.trim();
+        const sourceKey = `${wh}_${side}_${slotNum}`; 
+        const locDisplay = `${wh.replace("Kho ", "K")}-${side.charAt(4)}-${slotNum}`;
+        
+        // 8.1 - BỘ LỌC KIỂM TRA LỖI RÕ RÀNG
+        if (mode === "nhap") {
+            const itemName = document.getElementById("form-item-name").value.trim(); 
+            const contract = document.getElementById("form-contract").value.trim();
+            const qty = document.getElementById("form-qty-nhap").value;
+            const itemType = document.getElementById("form-item-type").value;
+            const lengthPerRoll = document.getElementById("form-item-length").value;
+            
+            if (!itemName) { alert("Vui lòng nhập Tên mã hàng hóa!"); return; }
+            if (!contract) { alert("Vui lòng nhập Số Hợp Đồng / Lô!"); return; }
+            if (!qty || parseInt(qty) <= 0) { alert("Vui lòng nhập số lượng lớn hơn 0!"); return; }
+            if (itemType === "cach_nhiet" && (!lengthPerRoll || parseFloat(lengthPerRoll) <= 0)) {
+                alert("Bạn chọn Hàng Cách Nhiệt nên vui lòng nhập 'Số mét dài / 1 Cuộn'!"); return;
+            }
+        } 
+        else {
+            const inputs = document.querySelectorAll(".multi-lot-input");
+            let hasSelection = false;
+            inputs.forEach(input => { if (parseInt(input.value) > 0) hasSelection = true; });
+            
+            if (!hasSelection) { alert("Vui lòng nhập số lượng hàng cần lấy ra từ các lô hiện có!"); return; }
+
+            if (mode === "chuyen") {
+                if (!document.getElementById("dest-slot-num").value.trim()) { alert("Vui lòng nhập Ô đích đến để chuyển vị trí!"); return; }
+            } 
+            else if (mode === "giacong") {
+                const names = document.querySelectorAll(".gc-name");
+                const qties = document.querySelectorAll(".gc-qty");
+                let hasOutput = false;
+                for(let i=0; i<names.length; i++) {
+                    if (names[i].value.trim() && parseInt(qties[i].value) > 0) hasOutput = true;
+                }
+                if (!hasOutput) { alert("Vui lòng khai báo Tên mã hàng và Số lượng cho ít nhất 1 dòng đầu ra!"); return; }
+                if (!document.getElementById("gc-dest-slot").value.trim()) { alert("Vui lòng nhập Tên ô đích để cất hàng sau khi cắt ghép!"); return; }
+            }
+        }
+
+        // 8.2 - NẾU KHÔNG CÓ LỖI -> XỬ LÝ LƯU THỰC TẾ
+        let timeStr = new Date().toLocaleString('vi-VN');
+        let currentDayStr = new Date().toISOString().substring(0, 10);
+        if(!window.inventory[sourceKey]) { window.inventory[sourceKey] = []; }
+
+        let inventorySnapshot = JSON.stringify(window.inventory);
+
+        if (mode === "nhap") {
+            const qty = parseInt(document.getElementById("form-qty-nhap").value);
+            const itemName = document.getElementById("form-item-name").value.trim(); 
+            const itemType = document.getElementById("form-item-type").value;
+            const lengthPerRoll = document.getElementById("form-item-length").value;
+            const contract = document.getElementById("form-contract").value.trim(); 
+            const dateAction = document.getElementById("form-date-action").value; 
+            const customer = document.getElementById("form-customer").value.trim();
+            const minLimit = parseInt(document.getElementById("form-min-limit").value) || 0;
+            const expiryDate = document.getElementById("form-expiry-date").value;
+            const note = document.getElementById("form-note").value.trim();
+            
+            let newLot = { name: itemName, qty: qty, contract: contract, dateAction: dateAction, customer: customer, note: note, minLimit: minLimit, expiryDate: expiryDate, isCustomerItem: false, itemType: itemType };
+            if(itemType === 'cach_nhiet') newLot.lengthPerRoll = lengthPerRoll;
+            
+            window.inventory[sourceKey].push(newLot);
+            
+            window.logs.unshift({ 
+                time: timeStr, dateRaw: dateAction, action: "NHẬP", pos: locDisplay, 
+                name: `Mã: ${formatItemName(newLot)} (HĐ: ${contract})`, customer: customer || "---", qty: `+${qty}`, snapshot: inventorySnapshot 
+            });
+        } 
+        else {
+            const inputs = document.querySelectorAll(".multi-lot-input");
+            let itemsToProcess = []; let totalProcessedQty = 0;
+            
+            inputs.forEach(input => {
+                let taken = parseInt(input.value) || 0;
+                let idx = parseInt(input.getAttribute("data-idx"));
+                if (taken > 0) { itemsToProcess.push({ originalIdx: idx, qtyToTake: taken }); totalProcessedQty += taken; }
+            });
+
+            let summaryLogText = "";
+
+            if (mode === "xuat") {
+                itemsToProcess.forEach(item => {
+                    let targetLot = window.inventory[sourceKey][item.originalIdx];
+                    summaryLogText += `${formatItemName(targetLot)}: -${item.qtyToTake}; `;
+                    targetLot.qty -= item.qtyToTake;
+                });
+                window.logs.unshift({ time: timeStr, dateRaw: currentDayStr, action: "XUẤT", pos: locDisplay, name: `Đơn xuất gộp -> [ ${summaryLogText} ]`, customer: "Bán thẳng", qty: `-${totalProcessedQty}`, snapshot: inventorySnapshot });
+            } 
+            else if (mode === "chuyen") {
+                const destWh = document.getElementById("dest-wh").value; const destSide = document.getElementById("dest-side").value; let destSlotNum = document.getElementById("dest-slot-num").value.trim();
+                const destKey = `${destWh}_${destSide}_${destSlotNum}`; const destDisplay = `${destWh.replace("Kho ", "K")}-${destSide.charAt(4)}-${destSlotNum}`;
+                if(sourceKey === destKey) { alert("Vị trí đích trùng vị trí gốc!"); return; }
+                if(!window.inventory[destKey]) window.inventory[destKey] = [];
+
+                itemsToProcess.forEach(item => {
+                    let sourceLot = window.inventory[sourceKey][item.originalIdx];
+                    summaryLogText += `${formatItemName(sourceLot)}: Dời ${item.qtyToTake}; `;
+                    window.inventory[destKey].push({ ...sourceLot, qty: item.qtyToTake });
+                    sourceLot.qty -= item.qtyToTake;
+                });
+                window.logs.unshift({ time: timeStr, dateRaw: currentDayStr, action: "CHUYỂN VỊ TRÍ", pos: `Từ ${locDisplay} ➜ ${destDisplay}`, name: `Di chuyển -> [ ${summaryLogText} ]`, customer: "Nội bộ", qty: totalProcessedQty, snapshot: inventorySnapshot });
+            }
+            else if (mode === "giacong") {
+                const names = document.querySelectorAll(".gc-name");
+                const qties = document.querySelectorAll(".gc-qty");
+                const lens = document.querySelectorAll(".gc-len");
+                let outputCreated = []; let totalOutQty = 0;
+
+                for(let i=0; i<names.length; i++) {
+                    let n = names[i].value.trim(); let q = parseInt(qties[i].value) || 0; let l = parseFloat(lens[i].value);
+                    if(n && q > 0) { 
+                        let outLot = { name: n, qty: q };
+                        if(l > 0) { outLot.itemType = 'cach_nhiet'; outLot.lengthPerRoll = l; }
+                        else { outLot.itemType = 'normal'; }
+                        outputCreated.push(outLot); totalOutQty += q; 
+                    }
+                }
+
+                const destWh = document.getElementById("gc-dest-wh").value; const destSide = document.getElementById("gc-dest-side").value; let destSlotNum = document.getElementById("gc-dest-slot").value.trim();
+                const destKey = `${destWh}_${destSide}_${destSlotNum}`; const destDisplay = `${destWh.replace("Kho ", "K")}-${destSide.charAt(4)}-${destSlotNum}`;
+                if(!window.inventory[destKey]) window.inventory[destKey] = [];
+
+                let rootContract = window.inventory[sourceKey][itemsToProcess[0].originalIdx].contract;
+                let inText = "";
+                itemsToProcess.forEach(item => {
+                    let sourceLot = window.inventory[sourceKey][item.originalIdx];
+                    inText += `${formatItemName(sourceLot)} (-${item.qtyToTake}); `;
+                    sourceLot.qty -= item.qtyToTake;
+                });
+
+                let outText = "";
+                outputCreated.forEach(outItem => {
+                    outText += `${formatItemName(outItem)} (+${outItem.qty}); `;
+                    window.inventory[destKey].push({ name: outItem.name, qty: outItem.qty, itemType: outItem.itemType, lengthPerRoll: outItem.lengthPerRoll, contract: `GC-${rootContract}`, dateAction: currentDayStr, customer: "Hàng Gia công", note: "Tạo từ Cắt/Ghép", isCustomerItem: false });
+                });
+                
+                let scrapText = document.getElementById("gc-summary").innerText;
+                window.logs.unshift({ time: timeStr, dateRaw: currentDayStr, action: "GIA CÔNG", pos: `Tại ${locDisplay} ➜ ${destDisplay}`, name: `Gốc: [${inText}] ➜ Mới: [${outText}]`, customer: `[${scrapText}]`, qty: `Tạo: ${totalOutQty}`, snapshot: inventorySnapshot });
+            }
+        }
+        
+        hideActionCard(); 
+        renderWarehouseMap();
+        renderHistoryTable();
+        if(window.selectedSlotKey) { let p = window.selectedSlotKey.split("_"); showDetailPanel(p[1], p[2], `Ô ${p[2]}`); }
+        syncWithCloud("write");
+    }
+
+    // 🟢 HÀM XÓA BƯỚC SNAPSHOT
+    window.deleteSpecificLogStep = function(targetIdx) {
+        let inputPass = prompt("Nhập mật khẩu quản trị viên để hoàn tác xóa bước (123456):");
+        if (inputPass !== ADMIN_PASSWORD) { alert("❌ Mật khẩu không chính xác!"); return; }
+
+        let targetLog = window.logs[targetIdx];
+        if (!targetLog) return;
+
+        if (targetLog.snapshot) { 
+            if (targetIdx > 0) {
+                let confirmWipe = confirm("⚠️ CHÚ Ý QUAN TRỌNG:\n\nĐây KHÔNG phải là thao tác mới nhất bạn vừa làm. Nếu bạn khôi phục kho về thời điểm này, toàn bộ các bước bạn đã làm sau đó SẼ BỊ XÓA THEO để đảm bảo số liệu kho không bị sai lệch.\n\nBạn có chắc chắn muốn quay ngược thời gian?");
+                if (!confirmWipe) return;
+            }
+            window.inventory = JSON.parse(targetLog.snapshot); 
+            window.logs.splice(0, targetIdx + 1);
+        } else {
+            let confirmOld = confirm("⚠️ Dòng lịch sử này quá cũ (không có bản chụp). Việc xóa này chỉ làm sạch dòng chữ trên bảng mà KHÔNG thể cộng trừ trả lại số kho. Tiếp tục?");
+            if (!confirmOld) return;
+            window.logs.splice(targetIdx, 1);
+        }
+        
+        renderWarehouseMap();
+        renderHistoryTable();
+        if(window.selectedSlotKey) { let p = window.selectedSlotKey.split("_"); showDetailPanel(p[1], p[2], `Ô ${p[2]}`); }
+        alert("🟢 Đã khôi phục số liệu kho thành công!");
+        syncWithCloud("write");
+    }
+
+    // 9. RENDER CÁC BẢNG BIỂU DỮ LIỆU
+    function renderInventoryTable() {
+        const tbody = document.getElementById("inventory-table-body"); tbody.innerHTML = "";
+        let pivotData = {};
+
+        for (const [key, lots] of Object.entries(window.inventory)) {
+            const p = key.split("_"); const nDisplay = `${p[0]} ➔ Dãy ${p[1].charAt(4)} ➔ Ô ${p[2]}`;
+            lots.forEach(lot => {
+                if(lot.qty > 0) {
+                    let dName = formatItemName(lot);
+                    if (!pivotData[nDisplay]) pivotData[nDisplay] = {};
+                    if (!pivotData[nDisplay][dName]) pivotData[nDisplay][dName] = { companyQty: 0 };
+                    pivotData[nDisplay][dName].companyQty += lot.qty;
+                }
+            });
+        }
+
+        let hasData = false;
+        for (const [location, items] of Object.entries(pivotData)) {
+            for (const [itemName, qties] of Object.entries(items)) {
+                hasData = true; const row = document.createElement("tr");
+                row.innerHTML = `<td><b>${location}</b></td><td><span style="font-weight:600; color:#1e293b;">${itemName}</span></td><td style="text-align:right; color:var(--primary); font-weight:bold;">${qties.companyQty || '---'}</td>`;
+                tbody.appendChild(row);
+            }
+        }
+        if(!hasData) tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#9ca3af; padding:20px; font-style:italic;">Bãi kho hoàn toàn trống rỗng.</td></tr>`;
+    }
+
+    function renderHistoryTable() {
+        const tbody = document.getElementById("history-table-body"); tbody.innerHTML = "";
+        if(window.logs.length === 0) { tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#9ca3af;">Chưa có nhật ký hoạt động.</td></tr>`; return; }
+        window.logs.slice(0, 100).forEach((log, index) => {
+            let bd = log.action === "NHẬP" ? `<span class="badge badge-nhap">NHẬP HÀNG</span>` : log.action === "XUẤT" ? `<span class="badge badge-xuat">XUẤT HÀNG</span>` : log.action === "GIA CÔNG" ? `<span class="badge badge-giacong">CẮT GHÉP</span>` : `<span class="badge badge-chuyen">CHUYỂN Ô</span>`;
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td><small>${log.time}</small></td>
+                <td>${bd}</td>
+                <td><small><b>${log.pos}</b></small></td>
+                <td>${log.name}</td>
+                <td style="font-weight:bold; text-align:right; color:${log.action==='NHẬP'?'var(--success)':log.action==='XUẤT'?'var(--danger)':'#333'}">${log.qty}</td>
+                <td style="text-align:center;"><button class="btn-delete-log" onclick="deleteSpecificLogStep(${index})">❌ Hoàn tác</button></td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    // 10. XUẤT EXCEL
+    window.exportDataToExcel = function(type) {
+        const fromDate = document.getElementById("excel-from-date").value; const toDate = document.getElementById("excel-to-date").value;
+        if(!fromDate || !toDate) { alert("Vui lòng chọn đầy đủ mốc thời gian!"); return; }
+        let wb = XLSX.utils.book_new();
+
+        if (type === 'tonghop') {
+            let summaryRows = [["BÁO CÁO TỔNG HỢP XUẤT NHẬP TỒN HÀNG HÓA KHO CÁT TƯỜNG"],[`Khoảng thời gian: ${formatDateDisplay(fromDate)} đến ${formatDateDisplay(toDate)}`],[],["STT", "Vị Trí Ô Kho", "Mã Hàng Hóa", "Số Hợp Đồng / Lô", "Số Lượng Tồn Bãi"]];
+            let index = 1;
+            for (const [slotKey, lots] of Object.entries(window.inventory)) {
+                const p = slotKey.split("_"); const cleanPos = `${p[0]} -> Dãy ${p[1].charAt(4)} -> Ô ${p[2]}`;
+                lots.forEach(lot => {
+                    if (lot.qty > 0 && lot.dateAction >= fromDate && lot.dateAction <= toDate) {
+                        summaryRows.push([index++, cleanPos, formatItemName(lot), lot.contract, lot.qty]);
+                    }
+                });
+            }
+            let ws = XLSX.utils.aoa_to_sheet(summaryRows); XLSX.utils.book_append_sheet(wb, ws, "Báo Cáo Tổng Hợp XNT"); XLSX.writeFile(wb, `Bao_Cao_XNT_Tong_Hop.xlsx`);
+        } 
+        else if (type === 'chitiet') {
+            let detailRows = [["SỔ CHI TIẾT NHẬT KÝ HOẠT ĐỘNG BIẾN ĐỘNG KHO BÃI CÁT TƯỜNG"],[`Thời gian: ${formatDateDisplay(fromDate)} đến ${formatDateDisplay(toDate)}`],[],["Mốc Thời Gian", "Hành Động", "Vị Trí Ô Kho", "Thông Tin Hàng Hóa", "Biến Động Số Lượng"]];
+            window.logs.forEach(log => {
+                if (log.dateRaw && log.dateRaw >= fromDate && log.dateRaw <= toDate) detailRows.push([log.time, log.action, log.pos, log.name, log.qty]);
+            });
+            let ws = XLSX.utils.aoa_to_sheet(detailRows); XLSX.utils.book_append_sheet(wb, ws, "Sổ Chi Tiết Hoạt Động"); XLSX.writeFile(wb, `So_Chi_Tiet_Bien_Dong_Kho.xlsx`);
+        }
+    }
+
+    // Bắt đầu ứng dụng
+    syncWithCloud("read");
+</script>
+</body>
+</html>
