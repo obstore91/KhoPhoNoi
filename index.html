@@ -103,34 +103,20 @@
         .multi-lot-table { width: 100%; border-collapse: collapse; margin-top: 5px; background: white; font-size: 12px; }
         .multi-lot-table th { background: #f1f5f9; padding: 6px; font-weight: bold; text-align: left; }
         .multi-lot-table td { padding: 6px; border-bottom: 1px solid #e2e8f0; }
-        .multi-lot-input { width: 70px; padding: 3px; border: 1px solid #cbd5e1; border-radius: 4px; text-align: right; outline: none; }
+        .multi-lot-input { width: 70px; padding: 3px; border: 1px solid #cbd5e1; border-radius: 4px; text-align: right; outline: none; font-weight:bold; color:var(--primary); }
         .btn-delete-log { background: #fee2e2; color: #b91c1c; font-size: 11px; padding: 3px 6px; border-radius: 4px; font-weight: bold; border: 1px solid #fca5a5; cursor: pointer; }
         
         .giacong-box { border: 2px dashed var(--cyan); padding: 10px; border-radius: 8px; background: var(--cyan-light); margin-bottom: 10px; }
         .giacong-box h4 { font-size: 13px; color: #0891b2; margin-bottom: 8px; border-bottom: 1px solid #a5f3fc; padding-bottom: 4px; }
         .output-row { display: flex; gap: 8px; margin-bottom: 5px; align-items: center; }
 
-        /* --- CSS CHO MÀN HÌNH KHÓA ĐĂNG NHẬP VÒNG NGOÀI --- */
-        #login-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #f0f2f5; z-index: 999999;
-            display: flex; justify-content: center; align-items: center;
-        }
-        .login-box {
-            background: white; padding: 35px; border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15); text-align: center; width: 380px;
-        }
+        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #f0f2f5; z-index: 999999; display: flex; justify-content: center; align-items: center; }
+        .login-box { background: white; padding: 35px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); text-align: center; width: 380px; }
         .login-box h2 { color: #2563eb; margin-bottom: 8px; font-size: 20px; font-weight: 800; }
         .login-box p { font-size: 13px; color: #64748b; margin-bottom: 20px; }
-        .login-box input {
-            width: 100%; padding: 12px; border: 2px solid #cbd5e1; border-radius: 8px;
-            margin-bottom: 15px; font-size: 16px; outline: none; text-align: center; font-weight: bold; letter-spacing: 2px;
-        }
+        .login-box input { width: 100%; padding: 12px; border: 2px solid #cbd5e1; border-radius: 8px; margin-bottom: 15px; font-size: 16px; outline: none; text-align: center; font-weight: bold; letter-spacing: 2px; }
         .login-box input:focus { border-color: #2563eb; }
-        .login-box button {
-            width: 100%; padding: 12px; background: #2563eb; color: white; border: none;
-            border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; transition: background 0.2s;
-        }
+        .login-box button { width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; transition: background 0.2s; }
         .login-box button:hover { background: #1d4ed8; }
         .login-error { color: #dc2626; font-size: 13px; margin-top: 12px; display: none; font-weight: bold; }
     </style>
@@ -158,7 +144,7 @@
             <p id="save-indicator" class="storage-status">🔒 Đang chờ đăng nhập...</p>
         </div>
         <div class="actions-bar">
-            <input type="text" id="search-input" class="search-box" placeholder="🔍 Tìm Mã hàng, Số HĐ, Số Phiếu..." oninput="handleSearch()">
+            <input type="text" id="search-input" class="search-box" placeholder="🔍 Tìm Mã hàng, Số HĐ, Số Phiếu, Khách hàng..." oninput="handleSearch()">
             <button class="btn-primary" style="background:#0284c7; box-shadow: 0 2px 4px rgba(0,0,0,0.2);" onclick="syncWithCloud('read')">🔄 Làm Mới Dữ Liệu</button>
             <button class="btn-dark" onclick="triggerWebBackupRollback()">⏪ Khôi Phục Lịch Sử</button>
         </div>
@@ -179,6 +165,7 @@
     </div>
 
     <div class="main-layout">
+        <!-- BÊN TRÁI -->
         <div>
             <div class="warehouse-selector">
                 <button class="tab-btn active" id="btn-kho-sx" onclick="switchWarehouse('Kho sản xuất')">🏭 KHO SẢN XUẤT</button>
@@ -226,6 +213,7 @@
             </div>
         </div>
 
+        <!-- BÊN PHẢI -->
         <div class="panel-right">
             <div class="card" id="detail-card" style="border: 1px solid var(--primary);">
                 <div class="card-title" style="color: var(--primary);">
@@ -235,6 +223,7 @@
                 <div id="detail-content"><p style="color: #666; font-style: italic;">Bấm chọn một ô trên sơ đồ bãi kho để xem chi tiết danh sách từng mã hàng.</p></div>
             </div>
 
+            <!-- FORM CHÍNH -->
             <div class="card" id="action-card" style="display:none; border: 2px solid #2563eb;">
                 <div class="card-title" id="action-title">Thao tác kho</div>
                 <form id="warehouse-form">
@@ -249,6 +238,7 @@
                         <div class="form-group"><label style="color:var(--danger);">Số Phiếu Thao Tác *</label><input type="text" id="form-voucher" class="form-control" placeholder="Ví dụ: PN-001, PX-002"></div>
                     </div>
 
+                    <!-- NHẬP HÀNG -->
                     <div id="nhap-info-fields" style="display:none; background: #f0fdf4; padding: 10px; border-radius: 6px; border: 1px solid #bbf7d0; margin-bottom: 10px;">
                         <p style="font-weight:bold; font-size:12px; color:var(--success); margin-bottom:6px;">📋 Chi tiết khai báo Lô Nhập Hàng:</p>
                         
@@ -281,14 +271,15 @@
                         </div>
                     </div>
 
+                    <!-- DANH SÁCH LÔ GỐC -->
                     <div id="select-lot-wrapper" style="display:none; background:#fffbf0; padding:10px; border-radius:6px; border:1px solid #fef08a; margin-bottom:10px;">
                         <label id="select-lot-title" style="font-weight:bold; font-size:12px; color:var(--warning); display:block; margin-bottom:5px;">📍 Nhập số lượng lấy ra tại các lô tương ứng bên dưới:</label>
                         <div style="max-height:180px; overflow-y:auto; border:1px solid #cbd5e1; border-radius:4px;">
                             <table class="multi-lot-table">
                                 <thead>
                                     <tr>
-                                        <th>Mã Hàng (HĐ)</th>
-                                        <th>Tồn bãi</th>
+                                        <th>Mã Hàng (HĐ) & Khách Hàng</th>
+                                        <th style="text-align:center; width:60px;">Tồn bãi</th>
                                         <th style="width:80px; text-align:right;">Số lấy</th>
                                     </tr>
                                 </thead>
@@ -297,6 +288,7 @@
                         </div>
                     </div>
 
+                    <!-- GIA CÔNG / CẮT GHÉP ĐẦU RA -->
                     <div id="giacong-output-fields" style="display:none;" class="giacong-box">
                         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid #a5f3fc; margin-bottom:8px; padding-bottom:4px;">
                             <h4 style="border:none; margin:0; padding:0;">✂️ KHAI BÁO HÀNG ĐẦU RA SAU CẮT/GHÉP</h4>
@@ -325,6 +317,7 @@
                         </div>
                     </div>
 
+                    <!-- CHUYỂN VỊ TRÍ -->
                     <div id="transfer-destination" style="display: none; border-top: 1px solid #eee; padding-top: 10px; margin-bottom: 10px;">
                         <p style="font-weight: bold; font-size: 13px; color: var(--primary); margin-bottom: 8px;">📍 Ô ĐÍCH ĐẾN CHUYỂN VỊ TRÍ:</p>
                         <div class="form-row">
@@ -334,14 +327,15 @@
                         <div class="form-group" style="margin-top:5px;"><label>Tên ô đích chính xác (Ví dụ: 5 hoặc Khoang 2)</label><input type="text" id="dest-slot-num" class="form-control"></div>
                     </div>
 
+                    <!-- KHU VỰC KHÁCH HÀNG & GHI CHÚ CHUNG -->
                     <div class="form-row" style="margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 10px; margin-bottom: 15px;">
-                        <div class="form-group">
-                            <label id="dynamic-customer-label">Khách Hàng (Tên KH / Nhập Kho)</label>
+                        <div class="form-group" id="customer-input-wrapper">
+                            <label id="dynamic-customer-label">Khách Hàng (Tên KH / Nhập Kho chung)</label>
                             <input type="text" id="form-customer" class="form-control" placeholder="Mặc định: Nhập Kho chung">
                         </div>
                         <div class="form-group">
-                            <label>Nguồn nhập / Ghi chú</label>
-                            <input type="text" id="form-note" class="form-control" placeholder="Nguồn cấp, ghi chú...">
+                            <label>Nguồn nhập / Ghi chú thao tác</label>
+                            <input type="text" id="form-note" class="form-control" placeholder="Nguồn cấp, ghi chú, biển số xe...">
                         </div>
                     </div>
 
@@ -352,6 +346,7 @@
                 </form>
             </div>
 
+            <!-- BẢNG THỐNG KÊ PIVOT -->
             <div class="card">
                 <div class="card-title">📊 Bảng Tổng Hợp Hàng Hóa Theo Vị Trí Ô Kho</div>
                 <div class="table-container" style="max-height: 380px;">
@@ -383,8 +378,7 @@
 <div id="log-detail-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999999; justify-content:center; align-items:center;" onclick="this.style.display='none'">
     <div class="card" style="width:600px; max-width:95%; margin-bottom:0; box-shadow:0 10px 30px rgba(0,0,0,0.3); border-top: 4px solid var(--primary);" onclick="event.stopPropagation()">
         <div class="card-title" style="color:var(--primary); font-size:16px;">📋 CHI TIẾT CHỨNG TỪ HOẠT ĐỘNG KHO</div>
-        <div id="log-modal-content" style="margin-top:12px; font-size:13px; line-height:1.6;">
-            </div>
+        <div id="log-modal-content" style="margin-top:12px; font-size:13px; line-height:1.6;"></div>
         <div style="text-align:right; margin-top:20px; border-top:1px solid #eee; padding-top:10px;">
             <button class="btn-primary" style="background:#475569;" onclick="document.getElementById('log-detail-modal').style.display='none'">Đóng Màn Hình</button>
         </div>
@@ -647,7 +641,6 @@
         renderInventoryTable();
     }
 
-    // --- CẬP NHẬT HIỂN THỊ KHÁCH HÀNG & NGUỒN NHẬP/GHI CHÚ GỌN GÀNG ---
     function showDetailPanel(side, num, displayName) {
         const lots = window.inventory[window.selectedSlotKey] || []; const detailContent = document.getElementById("detail-content");
         let headerHtml = `<div style="background:#f8fafc; padding:10px; border-radius:6px; margin-bottom:10px; border-left:4px solid var(--primary);"><p>📍 <b>${window.currentWarehouse}</b> ➜ Khu vực: <b>${side}</b></p><p style="font-size:13px; color:var(--primary); font-weight:bold; margin-top:2px;">📌 Vị trí ô: ${displayName}</p></div>`;
@@ -671,8 +664,7 @@
                     if (lot.note && lot.note !== "---") {
                         extInfo += `<br><span style="color:#6b7280; font-size:11px;">🏭 Nguồn nhập/Ghi chú: <b>${lot.note}</b></span>`;
                     }
-                    let kh = lot.customer;
-                    if (!kh || kh === "---") kh = "Nhập Kho chung";
+                    let kh = lot.customer || "Nhập Kho chung";
                     let khColor = (kh === "Nhập Kho chung" || kh.toLowerCase() === "nội bộ") ? "#059669" : "#d97706";
                     extInfo += `<br><span style="color:${khColor}; font-size:11px;">👤 Khách Hàng: <b>${kh}</b></span>`;
                     
@@ -709,14 +701,19 @@
         document.getElementById("form-voucher").value = ""; 
         document.getElementById("form-note").value = "";
 
+        // Ẩn/hiện ô nhập Khách hàng tùy theo thao tác
+        let customerWrapper = document.getElementById("customer-input-wrapper");
+        customerWrapper.style.display = "none"; // Ẩn mặc định
+
         let btn = document.getElementById("btn-submit-form");
-        let custLabel = document.getElementById("dynamic-customer-label");
 
         if(mode === "nhap") {
             document.getElementById("action-title").innerText = "➕ NHẬP HÀNG MỚI VÀO Ô KHO"; 
             btn.className = "btn-success"; btn.innerText = "Xác Nhận Nhập Kho";
-            custLabel.innerText = "Khách Hàng (Tên KH / Nhập Kho chung)";
-            document.getElementById("form-customer").value = "Nhập Kho chung"; // Mặc định tự điền
+            
+            customerWrapper.style.display = "block";
+            document.getElementById("form-customer").value = "Nhập Kho chung";
+            
             document.getElementById("nhap-info-fields").style.display = "block";
             document.getElementById("form-date-action").value = new Date().toISOString().substring(0, 10);
             toggleLengthInput(); 
@@ -724,16 +721,12 @@
         else if(mode === "xuat") {
             document.getElementById("action-title").innerText = "➖ XUẤT LÔ HÀNG"; 
             btn.className = "btn-danger"; btn.innerText = "Xác Nhận Xuất Bãi";
-            custLabel.innerText = "Khách Hàng xuất đến";
-            document.getElementById("form-customer").value = "";
             document.getElementById("select-lot-wrapper").style.display = "block";
             document.getElementById("select-lot-title").innerText = "📍 Nhập số lượng muốn lấy ra để xuất đi:";
         } 
         else if (mode === "chuyen") {
             document.getElementById("action-title").innerText = "🔄 CHUYỂN VỊ TRÍ HÀNG"; 
             btn.className = "btn-warning"; btn.innerText = "Xác Nhận Chuyển Ô";
-            custLabel.innerText = "Lý do / Bộ phận yêu cầu";
-            document.getElementById("form-customer").value = "Nội bộ";
             document.getElementById("select-lot-wrapper").style.display = "block";
             document.getElementById("transfer-destination").style.display = "block";
             document.getElementById("select-lot-title").innerText = "📍 Nhập số lượng muốn bốc đi chuyển ô khác:";
@@ -741,8 +734,10 @@
         else if (mode === "giacong") {
             document.getElementById("action-title").innerText = "✂️ GIA CÔNG: CẮT & GHÉP HÀNG"; 
             btn.className = "btn-cyan"; btn.innerText = "Xác Nhận Cắt/Ghép";
-            custLabel.innerText = "Khách Hàng (Tên KH / Nhập Kho chung)";
+            
+            customerWrapper.style.display = "block";
             document.getElementById("form-customer").value = "Nhập Kho chung";
+            
             document.getElementById("select-lot-wrapper").style.display = "block";
             document.getElementById("giacong-output-fields").style.display = "block";
             document.getElementById("select-lot-title").innerText = "📍 BƯỚC 1: ĐẦU VÀO - Chọn các cuộn hàng cần đem đi cắt/ghép:";
@@ -762,15 +757,22 @@
             let activeLots = lots.filter(l => l.qty > 0);
             
             if(activeLots.length === 0) {
-                listBody.innerHTML = "<tr><td colspan='4' style='text-align:center;color:#aaa;padding:10px;'>Ô kho này trống, không có hàng để thao tác!</td></tr>";
+                listBody.innerHTML = "<tr><td colspan='3' style='text-align:center;color:#aaa;padding:10px;'>Ô kho này trống, không có hàng để thao tác!</td></tr>";
             } else {
                 lots.forEach((lot, idx) => {
                     if(lot.qty > 0) {
+                        let kh = lot.customer || "Nhập Kho chung";
+                        let khColor = (kh === "Nhập Kho chung" || kh.toLowerCase() === "nội bộ") ? "#059669" : "#d97706";
+                        
                         listBody.innerHTML += `
                             <tr>
-                                <td><b>${formatItemName(lot)}</b><br><small style="font-family:monospace;color:#64748b;">HĐ: ${lot.contract}</small></td>
-                                <td style="font-weight:bold;color:#1e293b;">${lot.qty}</td>
-                                <td>
+                                <td style="padding: 6px;">
+                                    <b>${formatItemName(lot)}</b><br>
+                                    <small style="font-family:monospace;color:#64748b;">HĐ: ${lot.contract}</small><br>
+                                    <span style="color:${khColor}; font-size:11px; font-weight:bold;">👤 ${kh}</span>
+                                </td>
+                                <td style="font-weight:bold;color:#1e293b; vertical-align: middle; text-align: center;">${lot.qty}</td>
+                                <td style="vertical-align: middle;">
                                     <input type="number" class="multi-lot-input" data-idx="${idx}" min="0" max="${lot.qty}" placeholder="0" oninput="validateMaxLotInput(this, ${lot.qty}); calculateGiaCong()">
                                 </td>
                             </tr>
@@ -802,8 +804,7 @@
         const locDisplay = `${wh.replace("Kho ", "K")}-${side.charAt(4)}-${slotNum}`;
         
         const voucher = document.getElementById("form-voucher").value.trim();
-        let customer = document.getElementById("form-customer").value.trim();
-        if (!customer) customer = (mode === 'nhap' || mode === 'giacong') ? "Nhập Kho chung" : "Khách Lẻ";
+        const customer = document.getElementById("form-customer").value.trim();
         const note = document.getElementById("form-note").value.trim();
 
         if (!voucher) { alert("Vui lòng nhập Số Phiếu Thao Tác (VD: PN-01, PX-02)!"); return; }
@@ -853,15 +854,17 @@
             const contract = document.getElementById("form-contract").value.trim(); 
             const dateAction = document.getElementById("form-date-action").value; 
             
-            let newLot = { name: itemName, qty: qty, contract: contract, voucher: voucher, dateAction: dateAction, customer: customer, note: note, minLimit: 0, expiryDate: "", isCustomerItem: false, itemType: itemType };
+            let finalCustomer = customer || "Nhập Kho chung";
+
+            let newLot = { name: itemName, qty: qty, contract: contract, voucher: voucher, dateAction: dateAction, customer: finalCustomer, note: note, minLimit: 0, expiryDate: "", isCustomerItem: false, itemType: itemType };
             if(itemType === 'cach_nhiet') newLot.lengthPerRoll = lengthPerRoll;
             
             window.inventory[sourceKey].push(newLot);
             let finalName = formatItemName(newLot);
 
-            detailsArr.push({ name: finalName, qty: qty, type: 'NHẬP', contract: contract, voucher: voucher, pos: locDisplay, partner: customer, note: note });
+            detailsArr.push({ name: finalName, qty: qty, type: 'NHẬP', contract: contract, voucher: voucher, pos: locDisplay, partner: finalCustomer, note: note });
 
-            window.logs.unshift({ time: timeStr, dateRaw: dateAction, action: "NHẬP", pos: locDisplay, name: `Mã: ${finalName}`, customer: customer, note: note, qty: `+${qty}`, snapshot: inventorySnapshot, details: detailsArr, voucher: voucher });
+            window.logs.unshift({ time: timeStr, dateRaw: dateAction, action: "NHẬP", pos: locDisplay, name: `Mã: ${finalName}`, customer: finalCustomer, note: note, qty: `+${qty}`, snapshot: inventorySnapshot, details: detailsArr, voucher: voucher });
         } 
         else {
             const inputs = document.querySelectorAll(".multi-lot-input");
@@ -874,15 +877,20 @@
             let summaryLogText = "";
 
             if (mode === "xuat") {
+                let involvedCustomers = new Set();
                 itemsToProcess.forEach(item => {
                     let targetLot = window.inventory[sourceKey][item.originalIdx];
                     let finalName = formatItemName(targetLot);
                     summaryLogText += `${finalName}: -${item.qtyToTake}; `;
-                    targetLot.qty -= item.qtyToTake;
+                    
+                    let lotCustomer = targetLot.customer || 'Nhập Kho chung';
+                    involvedCustomers.add(lotCustomer);
 
-                    detailsArr.push({ name: finalName, qty: item.qtyToTake, type: 'XUẤT', contract: targetLot.contract, voucher: voucher, pos: locDisplay, partner: customer, note: note });
+                    targetLot.qty -= item.qtyToTake;
+                    detailsArr.push({ name: finalName, qty: item.qtyToTake, type: 'XUẤT', contract: targetLot.contract, voucher: voucher, pos: locDisplay, partner: lotCustomer, note: note });
                 });
-                window.logs.unshift({ time: timeStr, dateRaw: currentDayStr, action: "XUẤT", pos: locDisplay, name: `Đơn xuất gộp -> [ ${summaryLogText} ]`, customer: customer, note: note, qty: `-${totalProcessedQty}`, snapshot: inventorySnapshot, details: detailsArr, voucher: voucher });
+                let finalCustStr = Array.from(involvedCustomers).join(", ");
+                window.logs.unshift({ time: timeStr, dateRaw: currentDayStr, action: "XUẤT", pos: locDisplay, name: `Đơn xuất gộp -> [ ${summaryLogText} ]`, customer: finalCustStr, note: note, qty: `-${totalProcessedQty}`, snapshot: inventorySnapshot, details: detailsArr, voucher: voucher });
             } 
             else if (mode === "chuyen") {
                 const destWh = document.getElementById("dest-wh").value; const destSide = document.getElementById("dest-side").value; let destSlotNum = document.getElementById("dest-slot-num").value.trim();
@@ -890,18 +898,23 @@
                 if(sourceKey === destKey) { alert("Vị trí đích trùng vị trí gốc!"); return; }
                 if(!window.inventory[destKey]) window.inventory[destKey] = [];
 
+                let involvedCustomers = new Set();
                 itemsToProcess.forEach(item => {
                     let sourceLot = window.inventory[sourceKey][item.originalIdx];
                     let finalName = formatItemName(sourceLot);
                     summaryLogText += `${finalName}: Dời ${item.qtyToTake}; `;
                     
-                    window.inventory[destKey].push({ ...sourceLot, qty: item.qtyToTake, voucher: voucher, note: note || sourceLot.note, customer: customer || sourceLot.customer });
+                    let lotCustomer = sourceLot.customer || 'Nhập Kho chung';
+                    involvedCustomers.add(lotCustomer);
+
+                    window.inventory[destKey].push({ ...sourceLot, qty: item.qtyToTake, voucher: voucher, note: note || sourceLot.note, customer: lotCustomer });
                     sourceLot.qty -= item.qtyToTake;
 
-                    detailsArr.push({ name: finalName, qty: item.qtyToTake, type: 'XUẤT', contract: sourceLot.contract, voucher: voucher, pos: locDisplay, partner: customer || `Chuyển sang ${destDisplay}`, note: note });
-                    detailsArr.push({ name: finalName, qty: item.qtyToTake, type: 'NHẬP', contract: sourceLot.contract, voucher: voucher, pos: destDisplay, partner: customer || `Nhận từ ${locDisplay}`, note: note });
+                    detailsArr.push({ name: finalName, qty: item.qtyToTake, type: 'XUẤT', contract: sourceLot.contract, voucher: voucher, pos: locDisplay, partner: `Chuyển sang ${destDisplay}`, note: note });
+                    detailsArr.push({ name: finalName, qty: item.qtyToTake, type: 'NHẬP', contract: sourceLot.contract, voucher: voucher, pos: destDisplay, partner: `Nhận từ ${locDisplay}`, note: note });
                 });
-                window.logs.unshift({ time: timeStr, dateRaw: currentDayStr, action: "CHUYỂN VỊ TRÍ", pos: `Từ ${locDisplay} ➜ ${destDisplay}`, name: `Di chuyển -> [ ${summaryLogText} ]`, customer: customer, note: note, qty: totalProcessedQty, snapshot: inventorySnapshot, details: detailsArr, voucher: voucher });
+                let finalCustStr = Array.from(involvedCustomers).join(", ");
+                window.logs.unshift({ time: timeStr, dateRaw: currentDayStr, action: "CHUYỂN VỊ TRÍ", pos: `Từ ${locDisplay} ➜ ${destDisplay}`, name: `Di chuyển -> [ ${summaryLogText} ]`, customer: finalCustStr, note: note, qty: totalProcessedQty, snapshot: inventorySnapshot, details: detailsArr, voucher: voucher });
             }
             else if (mode === "giacong") {
                 const names = document.querySelectorAll(".gc-name"); const qties = document.querySelectorAll(".gc-qty"); const lens = document.querySelectorAll(".gc-len");
@@ -929,21 +942,22 @@
                     inText += `${finalName} (-${item.qtyToTake}); `;
                     sourceLot.qty -= item.qtyToTake;
 
-                    detailsArr.push({ name: finalName, qty: item.qtyToTake, type: 'XUẤT', contract: sourceLot.contract, voucher: voucher, pos: locDisplay, partner: customer || "Nguyên liệu cắt ghép", note: note });
+                    detailsArr.push({ name: finalName, qty: item.qtyToTake, type: 'XUẤT', contract: sourceLot.contract, voucher: voucher, pos: locDisplay, partner: "Nguyên liệu cắt ghép", note: note });
                 });
 
                 let outText = "";
+                let finalCustomer = customer || "Nhập Kho chung";
                 outputCreated.forEach(outItem => {
                     let finalName = formatItemName(outItem);
                     outText += `${finalName} (+${outItem.qty}); `;
                     let finalNote = note ? `${note} (Từ Cắt/Ghép)` : "Tạo từ Cắt/Ghép";
-                    window.inventory[destKey].push({ name: outItem.name, qty: outItem.qty, itemType: outItem.itemType, lengthPerRoll: outItem.lengthPerRoll, contract: `GC-${rootContract}`, voucher: voucher, dateAction: currentDayStr, customer: customer, note: finalNote, isCustomerItem: false });
+                    window.inventory[destKey].push({ name: outItem.name, qty: outItem.qty, itemType: outItem.itemType, lengthPerRoll: outItem.lengthPerRoll, contract: `GC-${rootContract}`, voucher: voucher, dateAction: currentDayStr, customer: finalCustomer, note: finalNote, isCustomerItem: false });
 
-                    detailsArr.push({ name: finalName, qty: outItem.qty, type: 'NHẬP', contract: `GC-${rootContract}`, voucher: voucher, pos: destDisplay, partner: customer, note: note });
+                    detailsArr.push({ name: finalName, qty: outItem.qty, type: 'NHẬP', contract: `GC-${rootContract}`, voucher: voucher, pos: destDisplay, partner: finalCustomer, note: note });
                 });
                 
                 let scrapText = document.getElementById("gc-summary").innerText;
-                window.logs.unshift({ time: timeStr, dateRaw: currentDayStr, action: "GIA CÔNG", pos: `Tại ${locDisplay} ➜ ${destDisplay}`, name: `Gốc: [${inText}] ➜ Mới: [${outText}]`, customer: customer || `[${scrapText}]`, note: note, qty: `Tạo: ${totalOutQty}`, snapshot: inventorySnapshot, details: detailsArr, voucher: voucher });
+                window.logs.unshift({ time: timeStr, dateRaw: currentDayStr, action: "GIA CÔNG", pos: `Tại ${locDisplay} ➜ ${destDisplay}`, name: `Gốc: [${inText}] ➜ Mới: [${outText}]`, customer: finalCustomer, note: note, qty: `Tạo: ${totalOutQty}`, snapshot: inventorySnapshot, details: detailsArr, voucher: voucher });
             }
         }
         
@@ -954,6 +968,7 @@
         syncWithCloud("write");
     }
 
+    // TÍCH HỢP GHI CHÚ VÀO POPUP XEM CHI TIẾT LỊCH SỬ
     window.showLogDetailModal = function(index) {
         const log = window.logs[index];
         if(!log) return;
@@ -965,9 +980,9 @@
                 <div><b>⏱️ Thời gian:</b> ${log.time}</div>
                 <div><b>🎫 Số Phiếu Gốc:</b> <span style="color:var(--danger); font-weight:bold;">${log.voucher || '---'}</span></div>
                 <div><b>⚡ Hoạt động:</b> ${log.action}</div>
-                <div><b>👤 Khách Hàng:</b> <span style="color:var(--success); font-weight:bold;">${log.customer || 'Nhập Kho chung'}</span></div>
+                <div><b>👤 Khách Hàng:</b> <span style="color:var(--success); font-weight:bold;">${log.customer || '---'}</span></div>
                 <div style="grid-column: span 2;"><b>📍 Vị trí bãi:</b> ${log.pos}</div>
-                <div style="grid-column: span 2;"><b>🏭 Nguồn nhập/Ghi chú:</b> <span style="color:var(--warning); font-weight:bold;">${log.note || '---'}</span></div>
+                <div style="grid-column: span 2;"><b>📝 Ghi chú:</b> <span style="color:var(--warning); font-weight:bold;">${log.note || '---'}</span></div>
             </div>
             <p style="font-weight:bold; color:var(--primary); margin-bottom:6px;">📦 CHI TIẾT DANH SÁCH BIẾN ĐỘNG HÀNG HÓA VÀO/RA KHO:</p>
         `;
@@ -1010,6 +1025,7 @@
         modal.style.display = "flex";
     }
 
+    // HOÀN TÁC BƯỚC
     window.deleteSpecificLogStep = function(targetIdx) {
         let inputPass = prompt("Nhập mật khẩu quản trị viên để hoàn tác:");
         if (inputPass !== ADMIN_PASSWORD) { alert("❌ Mật khẩu không chính xác!"); return; }
