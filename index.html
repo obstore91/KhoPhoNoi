@@ -141,7 +141,6 @@
 </head>
 <body>
 
-<!-- GIAO DIỆN MÀN HÌNH KHÓA VÒNG NGOÀI CHỐNG KHÁCH LẠ -->
 <div id="login-screen">
     <div class="login-box">
         <h2>🔒 HỆ THỐNG KHO NỘI BỘ</h2>
@@ -160,7 +159,7 @@
         </div>
         <div class="actions-bar">
             <input type="text" id="search-input" class="search-box" placeholder="🔍 Tìm Mã hàng, Số HĐ, Số Phiếu..." oninput="handleSearch()">
-            <button class="btn-primary" style="background:#0284c7; box-shadow: 0 2px 4px rgba(0,0,0,0.2);" onclick="syncWithCloud('read')">🔄 Làm Mới Dữ Luệu</button>
+            <button class="btn-primary" style="background:#0284c7; box-shadow: 0 2px 4px rgba(0,0,0,0.2);" onclick="syncWithCloud('read')">🔄 Làm Mới Dữ Liệu</button>
             <button class="btn-dark" onclick="triggerWebBackupRollback()">⏪ Khôi Phục Lịch Sử</button>
         </div>
     </header>
@@ -180,7 +179,6 @@
     </div>
 
     <div class="main-layout">
-        <!-- BÊN TRÁI -->
         <div>
             <div class="warehouse-selector">
                 <button class="tab-btn active" id="btn-kho-sx" onclick="switchWarehouse('Kho sản xuất')">🏭 KHO SẢN XUẤT</button>
@@ -228,7 +226,6 @@
             </div>
         </div>
 
-        <!-- BÊN PHẢI -->
         <div class="panel-right">
             <div class="card" id="detail-card" style="border: 1px solid var(--primary);">
                 <div class="card-title" style="color: var(--primary);">
@@ -238,7 +235,6 @@
                 <div id="detail-content"><p style="color: #666; font-style: italic;">Bấm chọn một ô trên sơ đồ bãi kho để xem chi tiết danh sách từng mã hàng.</p></div>
             </div>
 
-            <!-- FORM CHÍNH -->
             <div class="card" id="action-card" style="display:none; border: 2px solid #2563eb;">
                 <div class="card-title" id="action-title">Thao tác kho</div>
                 <form id="warehouse-form">
@@ -253,7 +249,6 @@
                         <div class="form-group"><label style="color:var(--danger);">Số Phiếu Thao Tác *</label><input type="text" id="form-voucher" class="form-control" placeholder="Ví dụ: PN-001, PX-002"></div>
                     </div>
 
-                    <!-- NHẬP HÀNG -->
                     <div id="nhap-info-fields" style="display:none; background: #f0fdf4; padding: 10px; border-radius: 6px; border: 1px solid #bbf7d0; margin-bottom: 10px;">
                         <p style="font-weight:bold; font-size:12px; color:var(--success); margin-bottom:6px;">📋 Chi tiết khai báo Lô Nhập Hàng:</p>
                         
@@ -287,7 +282,6 @@
                         <div class="form-group"><label>Ghi chú chi tiết</label><input type="text" id="form-note" class="form-control"></div>
                     </div>
 
-                    <!-- DANH SÁCH LÔ GỐC -->
                     <div id="select-lot-wrapper" style="display:none; background:#fffbf0; padding:10px; border-radius:6px; border:1px solid #fef08a; margin-bottom:10px;">
                         <label id="select-lot-title" style="font-weight:bold; font-size:12px; color:var(--warning); display:block; margin-bottom:5px;">📍 Nhập số lượng lấy ra tại các lô tương ứng bên dưới:</label>
                         <div style="max-height:180px; overflow-y:auto; border:1px solid #cbd5e1; border-radius:4px;">
@@ -304,7 +298,6 @@
                         </div>
                     </div>
 
-                    <!-- GIA CÔNG / CẮT GHÉP ĐẦU RA -->
                     <div id="giacong-output-fields" style="display:none;" class="giacong-box">
                         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid #a5f3fc; margin-bottom:8px; padding-bottom:4px;">
                             <h4 style="border:none; margin:0; padding:0;">✂️ KHAI BÁO HÀNG ĐẦU RA SAU CẮT/GHÉP</h4>
@@ -333,7 +326,6 @@
                         </div>
                     </div>
 
-                    <!-- CHUYỂN VỊ TRÍ -->
                     <div id="transfer-destination" style="display: none; border-top: 1px solid #eee; padding-top: 10px; margin-bottom: 10px;">
                         <p style="font-weight: bold; font-size: 13px; color: var(--primary); margin-bottom: 8px;">📍 Ô ĐÍCH ĐẾN CHUYỂN VỊ TRÍ:</p>
                         <div class="form-row">
@@ -350,7 +342,6 @@
                 </form>
             </div>
 
-            <!-- BẢNG THỐNG KÊ PIVOT -->
             <div class="card">
                 <div class="card-title">📊 Bảng Tổng Hợp Hàng Hóa Theo Vị Trí Ô Kho</div>
                 <div class="table-container" style="max-height: 380px;">
@@ -379,13 +370,11 @@
     </div>
 </div>
 
-<!-- GIAO DIỆN MÀN HÌNH POPUP XEM CHI TIẾT PHIẾU XUẤT NHẬP GỘP -->
 <div id="log-detail-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999999; justify-content:center; align-items:center;" onclick="this.style.display='none'">
     <div class="card" style="width:600px; max-width:95%; margin-bottom:0; box-shadow:0 10px 30px rgba(0,0,0,0.3); border-top: 4px solid var(--primary);" onclick="event.stopPropagation()">
         <div class="card-title" style="color:var(--primary); font-size:16px;">📋 CHI TIẾT CHỨNG TỪ HOẠT ĐỘNG KHO</div>
         <div id="log-modal-content" style="margin-top:12px; font-size:13px; line-height:1.6;">
-            <!-- Dữ liệu chi tiết đơn gộp sẽ được vẽ bằng JS ở đây -->
-        </div>
+            </div>
         <div style="text-align:right; margin-top:20px; border-top:1px solid #eee; padding-top:10px;">
             <button class="btn-primary" style="background:#475569;" onclick="document.getElementById('log-detail-modal').style.display='none'">Đóng Màn Hình</button>
         </div>
@@ -527,6 +516,23 @@
                     let rData = docSnap.data();
                     window.inventory = rData.inventoryRaw ? JSON.parse(rData.inventoryRaw) : {};
                     window.logs = rData.logsRaw ? JSON.parse(rData.logsRaw) : [];
+
+                    // CƠ CHẾ DỌN RÁC NGẦM (GHOST DATA CLEANUP)
+                    let cleaned = false;
+                    for (let k in window.inventory) {
+                        const p = k.split("_");
+                        if (p.length < 3 || !p[0] || !p[1] || !p[2]) {
+                            delete window.inventory[k];
+                            cleaned = true;
+                        } else {
+                            let originalLen = window.inventory[k].length;
+                            window.inventory[k] = window.inventory[k].filter(l => l.qty > 0);
+                            if(window.inventory[k].length !== originalLen) cleaned = true;
+                        }
+                    }
+                    if (cleaned) {
+                        docRef.set({ inventoryRaw: JSON.stringify(window.inventory), logsRaw: JSON.stringify(window.logs) });
+                    }
                 }
                 indicator.innerText = "🟢 Phần mềm kho đã sẵn sàng!";
                 indicator.style.color = "var(--success)";
@@ -760,6 +766,11 @@
         const slotNum = document.getElementById("form-slot-num").value.trim();
         const voucher = document.getElementById("form-voucher").value.trim();
         
+        if (!wh || !side || !slotNum) {
+            alert("Lỗi: Không tìm thấy vị trí ô kho. Vui lòng đóng Form và click chọn lại ô trên sơ đồ!");
+            return;
+        }
+
         const sourceKey = `${wh}_${side}_${slotNum}`; 
         const locDisplay = `${wh.replace("Kho ", "K")}-${side.charAt(4)}-${slotNum}`;
         
@@ -796,8 +807,7 @@
 
         let timeStr = new Date().toLocaleString('vi-VN');
         let currentDayStr = new Date().toISOString().substring(0, 10);
-
-        // BẢO VỆ CHỐNG LỖI KHI NHẬP VÀO Ô TRỐNG
+        
         if (!window.inventory[sourceKey]) { window.inventory[sourceKey] = []; }
 
         let inventorySnapshot = JSON.stringify(window.inventory);
@@ -1027,7 +1037,6 @@
             let bd = log.action === "NHẬP" ? `<span class="badge badge-nhap">NHẬP HÀNG</span>` : log.action === "XUẤT" ? `<span class="badge badge-xuat">XUẤT HÀNG</span>` : log.action === "GIA CÔNG" ? `<span class="badge badge-giacong">CẮT GHÉP</span>` : `<span class="badge badge-chuyen">CHUYỂN Ô</span>`;
             const row = document.createElement("tr");
             
-            // Gắn sự kiện click vào dòng để xem chi tiết
             row.style.cursor = "pointer";
             row.setAttribute("onclick", `showLogDetailModal(${index})`);
             row.setAttribute("title", "Click vào dòng này để bung xem chi tiết phiếu đơn gộp đầy đủ");
