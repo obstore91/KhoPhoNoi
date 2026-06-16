@@ -45,7 +45,7 @@
         .slot:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .slot.has-item { background: #eff6ff; border-color: #bfdbfe; }
         .slot.has-customer-item { background: var(--purple-light); border-color: #d8b4fe; } 
-        .slot.has-error-item { background: #fee2e2; border-color: #fca5a5; } /* MÀU ĐỎ CHO HÀNG LỖI */
+        .slot.has-error-item { background: #fee2e2; border-color: #fca5a5; } 
         .slot.selected { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3); }
         .slot.special-zone { background: var(--special-bg); border-color: var(--special-border); }
         .slot.special-zone .slot-label { color: #9a3412; font-weight: bold; font-size: 9px; line-height: 1.1; margin-bottom: 2px; }
@@ -88,7 +88,7 @@
         .badge-xuat { background: var(--danger); }
         .badge-chuyen { background: var(--warning); }
         .badge-giacong { background: var(--cyan); }
-        .badge-error { background: #b91c1c; } /* MÀU LỖI CHO HUY HIỆU */
+        .badge-error { background: #b91c1c; } 
         
         .slot-num { font-size: 10px; color: #6b7280; font-weight: bold; text-align: left; border-bottom: 1px solid #f3f4f6; padding-bottom: 2px; }
         .slot-items-list-container { display: flex; flex-direction: column; gap: 2px; margin-top: 3px; flex-grow: 1; text-align: left; justify-content: flex-start; overflow: hidden; }
@@ -430,7 +430,6 @@
     window.logs = []; 
     window.searchQuery = "";
     
-    // CÁC BIẾN CHUYỂN ĐỔI CHẾ ĐỘ LỌC TÌM KIẾM
     window.isFilteringCustomerItem = false;
     window.isFilteringErrorItem = false;
 
@@ -569,10 +568,9 @@
         }
     }
 
-    // --- HÀM BẬT/TẮT CÁC BỘ LỌC TÌM KIẾM ---
     window.filterCustomerItems = () => {
         window.isFilteringCustomerItem = !window.isFilteringCustomerItem; 
-        window.isFilteringErrorItem = false; // Tắt lọc lỗi nếu đang bật
+        window.isFilteringErrorItem = false; 
         document.getElementById("btn-filter-err").style.background = "#dc2626";
         document.getElementById("btn-filter-err").innerHTML = "⚠️ Lọc Hàng Lỗi";
 
@@ -591,13 +589,13 @@
 
     window.filterErrorItems = () => {
         window.isFilteringErrorItem = !window.isFilteringErrorItem; 
-        window.isFilteringCustomerItem = false; // Tắt lọc gửi nếu đang bật
+        window.isFilteringCustomerItem = false; 
         document.getElementById("btn-filter-cus").style.background = "#8b5cf6";
         document.getElementById("btn-filter-cus").innerHTML = "👤 Lọc Hàng Gửi";
 
         let btn = document.getElementById("btn-filter-err");
         if(window.isFilteringErrorItem) {
-            btn.style.background = "#991b1b"; // Đỏ sậm
+            btn.style.background = "#991b1b"; 
             btn.innerHTML = "✅ Bỏ Lọc Lỗi";
             document.getElementById("search-input").value = ""; 
             window.searchQuery = "";
@@ -654,7 +652,6 @@
         let hasCustomerItem = activeLots.some(l => l.isCustomerItem);
         let hasErrorItem = activeLots.some(l => l.isErrorItem);
         
-        // Xét độ ưu tiên màu: Lỗi (Đỏ) > Khách gửi (Tím) > Bình thường (Xanh)
         if(hasErrorItem) slotDiv.classList.add("has-error-item");
         else if(hasCustomerItem) slotDiv.classList.add("has-customer-item");
         else if(activeLots.length > 0) slotDiv.classList.add("has-item");
@@ -758,7 +755,6 @@
         renderInventoryTable();
     }
 
-    // --- HIỂN THỊ DẤU HIỆU HÀNG LỖI BÊN TRONG BẢNG CHI TIẾT ---
     function showDetailPanel(side, num, displayName) {
         const lots = window.inventory[window.selectedSlotKey] || []; const detailContent = document.getElementById("detail-content");
         let headerHtml = `<div style="background:#f8fafc; padding:10px; border-radius:6px; margin-bottom:10px; border-left:4px solid var(--primary);"><p>📍 <b>${window.currentWarehouse}</b> ➜ Khu vực: <b>${side}</b></p><p style="font-size:13px; color:var(--primary); font-weight:bold; margin-top:2px;">📌 Vị trí ô: ${displayName}</p></div>`;
@@ -783,7 +779,6 @@
                         extInfo += `<br><span style="color:#6b7280; font-size:11px;">🏭 Nguồn/Ghi chú: <b>${lot.note}</b></span>`;
                     }
 
-                    // Tích hợp Nhãn Khách gửi và Hàng Lỗi
                     let kh = lot.customer || "Nhập Kho chung";
                     let khColor = (kh === "Nhập Kho chung" || kh.toLowerCase() === "nội bộ") ? "#059669" : "#d97706";
                     let isCusLabel = lot.isCustomerItem ? ' <span style="background:var(--purple); color:white; padding:1px 4px; border-radius:3px; font-size:9px;">[KHÁCH GỬI]</span>' : '';
@@ -791,7 +786,6 @@
                     
                     extInfo += `<br><span style="color:${khColor}; font-size:11px;">👤 Khách Hàng: <b>${kh}</b>${isCusLabel}${isErrLabel}</span>`;
                     
-                    // Nếu là hàng lỗi, tô nền dòng màu hồng nhạt
                     let rowColorClass = lot.isErrorItem ? "style='background:#fef2f2;'" : "class='lot-row-active'";
 
                     tableBodyHtml += `<tr ${rowColorClass}><td style="padding-left:15px;">📜 HĐ/Lô: <b>${lot.contract}</b> - Số Phiếu: <b>${lot.voucher || '---'}</b>${extInfo}</td><td>${formatDateDisplay(lot.dateAction)}</td><td style="font-size:13px; font-weight:bold; text-align:right; color:#1e293b;">${lot.qty}</td></tr>`;
@@ -810,7 +804,6 @@
         }
     }
 
-    // --- HÀM LOAD DANH SÁCH LÔ TRONG FORM THEO MỤC ĐÍCH ---
     window.renderMultiLotList = function(targetLots) {
         const listBody = document.getElementById("multi-lot-list-body");
         listBody.innerHTML = "";
@@ -842,7 +835,6 @@
         }
     }
 
-    // --- LỌC HÀNG KHI ĐỔI MỤC ĐÍCH XUẤT ---
     window.changeExportType = function() {
         const mode = document.getElementById("form-mode").value;
         if(mode !== 'xuat') return;
@@ -853,7 +845,6 @@
         const key = `${window.currentWarehouse}_${side}_${num}`; 
         const lots = window.inventory[key] || [];
         
-        // Loại bỏ hàng đã hỏng khỏi luồng xuất thông thường
         let targetLots = lots.map((lot, idx) => ({lot, idx})).filter(item => item.lot.qty > 0 && !item.lot.isErrorItem);
         
         if(expType === 'tra_ky_gui') {
@@ -876,6 +867,11 @@
     window.openQuickForm = function(mode, side, num) {
         document.getElementById("action-card").style.display = "block"; 
         document.getElementById("form-mode").value = mode;
+
+        // Reset the form fields correctly here, ensuring we write values.
+        document.getElementById("form-wh").value = window.currentWarehouse; 
+        document.getElementById("form-side").value = side; 
+        document.getElementById("form-slot-num").value = num;
 
         document.getElementById("nhap-info-fields").style.display = "none";
         document.getElementById("select-lot-wrapper").style.display = "none";
@@ -950,10 +946,8 @@
             document.querySelectorAll(".gc-len").forEach(el => el.value = "");
             document.getElementById("gc-summary").innerText = "Hao hụt / Tặng khách: 0m";
             
-            // Ẩn hàng hỏng khỏi danh sách đem đi gia công
             window.renderMultiLotList(activeLots.filter(item => !item.lot.isErrorItem));
         }
-        // FORM MỚI: BÁO LỖI HÀNG HÓA
         else if (mode === "baoloi") {
             document.getElementById("action-title").innerText = "⚠️ ĐÁNH DẤU HÀNG LỖI / RÁCH / HỎNG"; 
             btn.className = "btn-danger"; btn.style.background = "#b91c1c"; btn.innerText = "Xác Nhận Đánh Dấu Lỗi";
@@ -963,7 +957,6 @@
             document.getElementById("select-lot-title").innerText = "📍 Chọn số lượng hàng bị lỗi/hỏng trong các lô dưới đây:";
             document.getElementById("form-note").placeholder = "Ghi chú tình trạng vỡ, rách, hỏng, thấm nước...";
             
-            // Chỉ hiện những hàng chưa bị báo lỗi
             window.renderMultiLotList(activeLots.filter(item => !item.lot.isErrorItem));
         }
     }
@@ -1023,7 +1016,7 @@
                 if (!document.getElementById("gc-dest-slot").value.trim()) { alert("Vui lòng nhập Tên ô đích để cất hàng!"); return; }
             }
             if (mode === "baoloi" && !note) {
-                note = "Hàng bị vỡ/rách/hỏng"; // Tự động điền note nếu thủ kho lười gõ
+                note = "Hàng bị vỡ/rách/hỏng"; 
             }
         }
 
@@ -1198,10 +1191,8 @@
                     let lotCustomer = sourceLot.customer || 'Nhập Kho chung';
                     involvedCustomers.add(lotCustomer);
 
-                    // Trừ số lượng gốc
                     sourceLot.qty -= item.qtyToTake;
 
-                    // Tách thành lô mới và đánh dấu lỗi
                     let errorLot = { 
                         ...sourceLot, 
                         qty: item.qtyToTake, 
@@ -1216,7 +1207,7 @@
                         detailsArr.push({ name: finalName, qty: item.qtyToTake, type: 'XUẤT', contract: sourceLot.contract, voucher: voucher, pos: locDisplay, partner: `Chuyển kho Phế Phẩm`, note: note });
                         detailsArr.push({ name: finalName, qty: item.qtyToTake, type: 'NHẬP', contract: sourceLot.contract, voucher: voucher, pos: destDisplay, partner: `Hàng lỗi từ ${locDisplay}`, note: note });
                     } else {
-                        window.inventory[sourceKey].push(errorLot); // Để nguyên tại ô
+                        window.inventory[sourceKey].push(errorLot); 
                         detailsArr.push({ name: finalName, qty: item.qtyToTake, type: 'NHẬP', contract: sourceLot.contract, voucher: voucher, pos: locDisplay, partner: `Báo Lỗi / Phế Phẩm`, note: note });
                     }
                 });
@@ -1236,7 +1227,6 @@
         syncWithCloud("write");
     }
 
-    // TÍCH HỢP GHI CHÚ VÀO POPUP XEM CHI TIẾT LỊCH SỬ
     window.showLogDetailModal = function(index) {
         const log = window.logs[index];
         if(!log) return;
