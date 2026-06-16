@@ -717,11 +717,10 @@
         document.getElementById("form-voucher").value = ""; 
         document.getElementById("form-note").value = "";
 
-        // CHỈ HIỆN Ô KHÁCH HÀNG KHI LÀ LỆNH NHẬP / GIA CÔNG
         let customerWrapper = document.getElementById("customer-input-wrapper");
         let noteWrapper = document.getElementById("note-input-wrapper");
         customerWrapper.style.display = "none"; 
-        noteWrapper.style.gridColumn = "span 2"; // Mặc định note chiếm trọn 2 cột
+        noteWrapper.style.gridColumn = "span 2"; 
 
         let btn = document.getElementById("btn-submit-form");
 
@@ -822,8 +821,9 @@
             return;
         }
 
+        const whShort = wh === "Kho sản xuất" ? "Kho SX" : "Kho HH";
         const sourceKey = `${wh}_${side}_${slotNum}`; 
-        const locDisplay = `${wh.replace("Kho ", "K")}-${side.charAt(4)}-${slotNum}`;
+        const locDisplay = `${whShort}-${side.charAt(4)}-${slotNum}`;
         
         const voucher = document.getElementById("form-voucher").value.trim();
         let customer = document.getElementById("form-customer").value.trim();
@@ -916,7 +916,9 @@
             } 
             else if (mode === "chuyen") {
                 const destWh = document.getElementById("dest-wh").value; const destSide = document.getElementById("dest-side").value; let destSlotNum = document.getElementById("dest-slot-num").value.trim();
-                const destKey = `${destWh}_${destSide}_${destSlotNum}`; const destDisplay = `${destWh.replace("Kho ", "K")}-${destSide.charAt(4)}-${destSlotNum}`;
+                const destWhShort = destWh === "Kho sản xuất" ? "Kho SX" : "Kho HH";
+                const destKey = `${destWh}_${destSide}_${destSlotNum}`; 
+                const destDisplay = `${destWhShort}-${destSide.charAt(4)}-${destSlotNum}`;
                 if(sourceKey === destKey) { alert("Vị trí đích trùng vị trí gốc!"); return; }
                 if(!window.inventory[destKey]) window.inventory[destKey] = [];
 
@@ -932,8 +934,8 @@
                     window.inventory[destKey].push({ ...sourceLot, qty: item.qtyToTake, voucher: voucher, note: note || sourceLot.note, customer: lotCustomer });
                     sourceLot.qty -= item.qtyToTake;
 
-                    detailsArr.push({ name: finalName, qty: item.qtyToTake, type: 'XUẤT', contract: sourceLot.contract, voucher: voucher, pos: locDisplay, partner: lotCustomer, note: note });
-                    detailsArr.push({ name: finalName, qty: item.qtyToTake, type: 'NHẬP', contract: sourceLot.contract, voucher: voucher, pos: destDisplay, partner: lotCustomer, note: note });
+                    detailsArr.push({ name: finalName, qty: item.qtyToTake, type: 'XUẤT', contract: sourceLot.contract, voucher: voucher, pos: locDisplay, partner: `Chuyển sang ${destDisplay}`, note: note });
+                    detailsArr.push({ name: finalName, qty: item.qtyToTake, type: 'NHẬP', contract: sourceLot.contract, voucher: voucher, pos: destDisplay, partner: `Nhận từ ${locDisplay}`, note: note });
                 });
                 let finalCustStr = Array.from(involvedCustomers).join(", ");
                 window.logs.unshift({ time: timeStr, dateRaw: currentDayStr, action: "CHUYỂN VỊ TRÍ", pos: `Từ ${locDisplay} ➜ ${destDisplay}`, name: `Di chuyển -> [ ${summaryLogText} ]`, customer: finalCustStr, note: note, qty: totalProcessedQty, snapshot: inventorySnapshot, details: detailsArr, voucher: voucher });
@@ -953,7 +955,9 @@
                 }
 
                 const destWh = document.getElementById("gc-dest-wh").value; const destSide = document.getElementById("gc-dest-side").value; let destSlotNum = document.getElementById("gc-dest-slot").value.trim();
-                const destKey = `${destWh}_${destSide}_${destSlotNum}`; const destDisplay = `${destWh.replace("Kho ", "K")}-${destSide.charAt(4)}-${destSlotNum}`;
+                const destWhShort = destWh === "Kho sản xuất" ? "Kho SX" : "Kho HH";
+                const destKey = `${destWh}_${destSide}_${destSlotNum}`; 
+                const destDisplay = `${destWhShort}-${destSide.charAt(4)}-${destSlotNum}`;
                 if(!window.inventory[destKey]) window.inventory[destKey] = [];
 
                 let rootContract = window.inventory[sourceKey][itemsToProcess[0].originalIdx].contract;
@@ -1000,13 +1004,15 @@
         const modal = document.getElementById("log-detail-modal");
         const content = document.getElementById("log-modal-content");
         
+        let displayPos = log.pos.replace("Khàng hóa", "Kho HH").replace("Ksản xuất", "Kho SX");
+
         let html = `
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; background:#f8fafc; padding:12px; border-radius:8px; margin-bottom:15px; border:1px solid #e2e8f0;">
                 <div><b>⏱️ Thời gian:</b> ${log.time}</div>
                 <div><b>🎫 Số Phiếu Gốc:</b> <span style="color:var(--danger); font-weight:bold;">${log.voucher || '---'}</span></div>
                 <div><b>⚡ Hoạt động:</b> ${log.action}</div>
                 <div><b>👤 Khách Hàng:</b> <span style="color:var(--success); font-weight:bold;">${log.customer || '---'}</span></div>
-                <div style="grid-column: span 2;"><b>📍 Vị trí bãi:</b> ${log.pos}</div>
+                <div style="grid-column: span 2;"><b>📍 Vị trí bãi:</b> ${displayPos}</div>
                 <div style="grid-column: span 2;"><b>📝 Ghi chú:</b> <span style="color:var(--warning); font-weight:bold;">${log.note || '---'}</span></div>
             </div>
             <p style="font-weight:bold; color:var(--primary); margin-bottom:6px;">📦 CHI TIẾT DANH SÁCH BIẾN ĐỘNG HÀNG HÓA VÀO/RA KHO:</p>
@@ -1028,11 +1034,12 @@
             log.details.forEach(d => {
                 let color = d.type === 'NHẬP' ? 'color:var(--success);' : 'color:var(--danger);';
                 let sign = d.type === 'NHẬP' ? '+' : '-';
+                let detPos = d.pos.replace("Khàng hóa", "Kho HH").replace("Ksản xuất", "Kho SX");
                 html += `
                     <tr>
                         <td style="padding:8px; border:1px solid #cbd5e1;"><b>${d.name}</b></td>
                         <td style="padding:8px; border:1px solid #cbd5e1; text-align:center; font-family:monospace;">${d.contract || '---'}</td>
-                        <td style="padding:8px; border:1px solid #cbd5e1; text-align:center; font-weight:600;">${d.pos}</td>
+                        <td style="padding:8px; border:1px solid #cbd5e1; text-align:center; font-weight:600;">${detPos}</td>
                         <td style="padding:8px; border:1px solid #cbd5e1; text-align:right; font-weight:900; ${color}">${sign}${d.qty}</td>
                     </tr>
                 `;
@@ -1103,7 +1110,6 @@
         }
     }
 
-    // --- BẢNG NHẬT KÝ ĐƯỢC CHÈN THÊM CỘT KHÁCH HÀNG NGOÀI CÙNG ---
     function renderHistoryTable() {
         const tbody = document.getElementById("history-table-body"); tbody.innerHTML = "";
         if(window.logs.length === 0) { tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#9ca3af; padding: 20px;">Chưa có nhật ký hoạt động.</td></tr>`; return; }
@@ -1120,14 +1126,14 @@
                 displayNameText = `<span style="color:var(--purple); font-weight:bold;">📋 [ĐƠN GỘP ĐA LÔ]</span> Gồm ${log.details.length} mã hàng`;
             }
 
-            // Phân biệt màu sắc khách hàng
             let customerText = log.customer || '---';
             let custColor = (customerText === "Nhập Kho chung" || customerText.toLowerCase() === "nội bộ") ? "#059669" : "#d97706";
+            let displayPos = log.pos.replace("Khàng hóa", "Kho HH").replace("Ksản xuất", "Kho SX");
 
             row.innerHTML = `
                 <td><small style="color:#64748b;">${log.time.split(' ')[0]}</small><br><b>${log.time.split(' ')[1] || ''}</b></td>
                 <td>${bd}</td>
-                <td><small><b>${log.pos}</b></small></td>
+                <td><small><b>${displayPos}</b></small></td>
                 <td>${displayNameText}<br><small style="color:#64748b;">Phiếu: <b>${log.voucher || '---'}</b></small></td>
                 <td><span style="color:${custColor}; font-weight:700; font-size:11px;">👤 ${customerText}</span></td>
                 <td style="font-weight:bold; text-align:right; font-size:14px; color:${log.action==='NHẬP'?'var(--success)':log.action==='XUẤT'?'var(--danger)':'#333'}">${log.qty}</td>
@@ -1154,7 +1160,9 @@
 
             for (const [slotKey, lots] of Object.entries(window.inventory)) {
                 const p = slotKey.split("_");
-                const cleanPos = p[0].replace("Kho ", "K") + "-" + p[1].charAt(4) + "-" + p[2];
+                let whShortExcel = p[0] === "Kho sản xuất" ? "Kho SX" : "Kho HH";
+                const cleanPos = `${whShortExcel}-${p[1].charAt(4)}-${p[2]}`;
+
                 lots.forEach(lot => {
                     if (lot.qty > 0) {
                         let dName = formatItemName(lot);
@@ -1170,9 +1178,10 @@
             window.logs.forEach(log => {
                 if (log.dateRaw && log.dateRaw >= fromDate && log.dateRaw <= toDate && log.details) {
                     log.details.forEach(det => {
-                        let gKey = `${det.pos}|||${det.name}|||${det.contract}|||${det.partner||'Nhập Kho chung'}`;
+                        let detPos = det.pos.replace("Khàng hóa", "Kho HH").replace("Ksản xuất", "Kho SX");
+                        let gKey = `${detPos}|||${det.name}|||${det.contract}|||${det.partner||'Nhập Kho chung'}`;
                         if (!reportMap[gKey]) {
-                            reportMap[gKey] = { pos: det.pos, name: det.name, contract: det.contract, customer: det.partner || 'Nhập Kho chung', voucher: det.voucher || log.voucher || '---', nhap: 0, xuat: 0, ton: 0 };
+                            reportMap[gKey] = { pos: detPos, name: det.name, contract: det.contract, customer: det.partner || 'Nhập Kho chung', voucher: det.voucher || log.voucher || '---', nhap: 0, xuat: 0, ton: 0 };
                         }
                         if (det.type === 'NHẬP') { reportMap[gKey].nhap += det.qty; } 
                         else if (det.type === 'XUẤT') { reportMap[gKey].xuat += det.qty; }
@@ -1197,14 +1206,16 @@
 
             let sortedLogs = [...window.logs].reverse();
             sortedLogs.forEach(log => {
+                let logPos = log.pos.replace("Khàng hóa", "Kho HH").replace("Ksản xuất", "Kho SX");
                 if (log.dateRaw && log.dateRaw >= fromDate && log.dateRaw <= toDate) {
                     if (log.details && log.details.length > 0) {
                         log.details.forEach(det => {
-                            detailRows.push([log.time, log.action, det.voucher || log.voucher || '---', det.pos, det.name, det.contract, det.type === 'NHẬP' ? det.qty : 0, det.type === 'XUẤT' ? det.qty : 0, det.partner || log.customer || 'Nhập Kho chung', det.note || log.note || '---']);
+                            let detPos = det.pos.replace("Khàng hóa", "Kho HH").replace("Ksản xuất", "Kho SX");
+                            detailRows.push([log.time, log.action, det.voucher || log.voucher || '---', detPos, det.name, det.contract, det.type === 'NHẬP' ? det.qty : 0, det.type === 'XUẤT' ? det.qty : 0, det.partner || log.customer || 'Nhập Kho chung', det.note || log.note || '---']);
                         });
                     } else {
                         let rawQtyNum = parseInt(log.qty.replace(/[+-]/g, '')) || 0;
-                        detailRows.push([log.time, log.action, log.voucher || '---', log.pos, log.name, '---', log.qty.includes('+') ? rawQtyNum : 0, log.qty.includes('-') ? rawQtyNum : 0, log.customer || 'Nhập Kho chung', log.note || '---']);
+                        detailRows.push([log.time, log.action, log.voucher || '---', logPos, log.name, '---', log.qty.includes('+') ? rawQtyNum : 0, log.qty.includes('-') ? rawQtyNum : 0, log.customer || 'Nhập Kho chung', log.note || '---']);
                     }
                 }
             });
