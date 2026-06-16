@@ -110,13 +110,27 @@
         .giacong-box h4 { font-size: 13px; color: #0891b2; margin-bottom: 8px; border-bottom: 1px solid #a5f3fc; padding-bottom: 4px; }
         .output-row { display: flex; gap: 8px; margin-bottom: 5px; align-items: center; }
 
-        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #f0f2f5; z-index: 999999; display: flex; justify-content: center; align-items: center; }
-        .login-box { background: white; padding: 35px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); text-align: center; width: 380px; }
+        /* --- CSS CHO MÀN HÌNH KHÓA ĐĂNG NHẬP VÒNG NGOÀI --- */
+        #login-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #f0f2f5; z-index: 999999;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .login-box {
+            background: white; padding: 35px; border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15); text-align: center; width: 380px;
+        }
         .login-box h2 { color: #2563eb; margin-bottom: 8px; font-size: 20px; font-weight: 800; }
         .login-box p { font-size: 13px; color: #64748b; margin-bottom: 20px; }
-        .login-box input { width: 100%; padding: 12px; border: 2px solid #cbd5e1; border-radius: 8px; margin-bottom: 15px; font-size: 16px; outline: none; text-align: center; font-weight: bold; letter-spacing: 2px; }
+        .login-box input {
+            width: 100%; padding: 12px; border: 2px solid #cbd5e1; border-radius: 8px;
+            margin-bottom: 15px; font-size: 16px; outline: none; text-align: center; font-weight: bold; letter-spacing: 2px;
+        }
         .login-box input:focus { border-color: #2563eb; }
-        .login-box button { width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; transition: background 0.2s; }
+        .login-box button {
+            width: 100%; padding: 12px; background: #2563eb; color: white; border: none;
+            border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; transition: background 0.2s;
+        }
         .login-box button:hover { background: #1d4ed8; }
         .login-error { color: #dc2626; font-size: 13px; margin-top: 12px; display: none; font-weight: bold; }
     </style>
@@ -193,18 +207,20 @@
                 </div>
             </div>
 
+            <!-- BẢNG NHẬT KÝ ĐÃ THÊM CỘT KHÁCH HÀNG -->
             <div class="card" style="margin-top: 15px;">
                 <div class="card-title">📜 Nhật Ký Hoạt Động Xuất Nhập Chi Tiết (Bấm vào dòng để xem chi tiết phiếu gộp)</div>
                 <div class="table-container" style="max-height: 300px;">
                     <table>
                         <thead>
                             <tr>
-                                <th style="width: 130px;">Thời Gian</th>
+                                <th style="width: 110px;">Thời Gian</th>
                                 <th style="width: 80px;">Hành Động</th>
-                                <th style="width: 110px;">Vị Trí</th>
-                                <th>Thông Tin Hàng & Số Phiếu / Số HĐ</th>
-                                <th style="width: 80px; text-align: right;">Số Lượng</th>
-                                <th style="width: 90px; text-align: center;">Thao Tác</th>
+                                <th style="width: 90px;">Vị Trí</th>
+                                <th>Thông Tin Hàng & Số Phiếu</th>
+                                <th style="width: 140px;">Khách Hàng / Đặt Trước</th>
+                                <th style="width: 75px; text-align: right;">Số Lượng</th>
+                                <th style="width: 80px; text-align: center;">Thao Tác</th>
                             </tr>
                         </thead>
                         <tbody id="history-table-body"></tbody>
@@ -333,9 +349,9 @@
                             <label id="dynamic-customer-label">Khách Hàng (Tên KH / Nhập Kho chung)</label>
                             <input type="text" id="form-customer" class="form-control" placeholder="Mặc định: Nhập Kho chung">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" id="note-input-wrapper" style="grid-column: span 2;">
                             <label>Nguồn nhập / Ghi chú thao tác</label>
-                            <input type="text" id="form-note" class="form-control" placeholder="Nguồn cấp, ghi chú, biển số xe...">
+                            <input type="text" id="form-note" class="form-control" placeholder="Nguồn cấp, biển số xe, mục đích xuất...">
                         </div>
                     </div>
 
@@ -662,7 +678,7 @@
                     
                     let extInfo = "";
                     if (lot.note && lot.note !== "---") {
-                        extInfo += `<br><span style="color:#6b7280; font-size:11px;">🏭 Nguồn nhập/Ghi chú: <b>${lot.note}</b></span>`;
+                        extInfo += `<br><span style="color:#6b7280; font-size:11px;">🏭 Nguồn/Ghi chú: <b>${lot.note}</b></span>`;
                     }
                     let kh = lot.customer || "Nhập Kho chung";
                     let khColor = (kh === "Nhập Kho chung" || kh.toLowerCase() === "nội bộ") ? "#059669" : "#d97706";
@@ -701,9 +717,11 @@
         document.getElementById("form-voucher").value = ""; 
         document.getElementById("form-note").value = "";
 
-        // Ẩn/hiện ô nhập Khách hàng tùy theo thao tác
+        // CHỈ HIỆN Ô KHÁCH HÀNG KHI LÀ LỆNH NHẬP / GIA CÔNG
         let customerWrapper = document.getElementById("customer-input-wrapper");
-        customerWrapper.style.display = "none"; // Ẩn mặc định
+        let noteWrapper = document.getElementById("note-input-wrapper");
+        customerWrapper.style.display = "none"; 
+        noteWrapper.style.gridColumn = "span 2"; // Mặc định note chiếm trọn 2 cột
 
         let btn = document.getElementById("btn-submit-form");
 
@@ -712,7 +730,8 @@
             btn.className = "btn-success"; btn.innerText = "Xác Nhận Nhập Kho";
             
             customerWrapper.style.display = "block";
-            document.getElementById("form-customer").value = "Nhập Kho chung";
+            noteWrapper.style.gridColumn = "span 1";
+            document.getElementById("form-customer").value = "Nhập Kho chung"; 
             
             document.getElementById("nhap-info-fields").style.display = "block";
             document.getElementById("form-date-action").value = new Date().toISOString().substring(0, 10);
@@ -721,12 +740,14 @@
         else if(mode === "xuat") {
             document.getElementById("action-title").innerText = "➖ XUẤT LÔ HÀNG"; 
             btn.className = "btn-danger"; btn.innerText = "Xác Nhận Xuất Bãi";
+            document.getElementById("form-customer").value = "";
             document.getElementById("select-lot-wrapper").style.display = "block";
             document.getElementById("select-lot-title").innerText = "📍 Nhập số lượng muốn lấy ra để xuất đi:";
         } 
         else if (mode === "chuyen") {
             document.getElementById("action-title").innerText = "🔄 CHUYỂN VỊ TRÍ HÀNG"; 
             btn.className = "btn-warning"; btn.innerText = "Xác Nhận Chuyển Ô";
+            document.getElementById("form-customer").value = "";
             document.getElementById("select-lot-wrapper").style.display = "block";
             document.getElementById("transfer-destination").style.display = "block";
             document.getElementById("select-lot-title").innerText = "📍 Nhập số lượng muốn bốc đi chuyển ô khác:";
@@ -736,6 +757,7 @@
             btn.className = "btn-cyan"; btn.innerText = "Xác Nhận Cắt/Ghép";
             
             customerWrapper.style.display = "block";
+            noteWrapper.style.gridColumn = "span 1";
             document.getElementById("form-customer").value = "Nhập Kho chung";
             
             document.getElementById("select-lot-wrapper").style.display = "block";
@@ -804,7 +826,7 @@
         const locDisplay = `${wh.replace("Kho ", "K")}-${side.charAt(4)}-${slotNum}`;
         
         const voucher = document.getElementById("form-voucher").value.trim();
-        const customer = document.getElementById("form-customer").value.trim();
+        let customer = document.getElementById("form-customer").value.trim();
         const note = document.getElementById("form-note").value.trim();
 
         if (!voucher) { alert("Vui lòng nhập Số Phiếu Thao Tác (VD: PN-01, PX-02)!"); return; }
@@ -910,8 +932,8 @@
                     window.inventory[destKey].push({ ...sourceLot, qty: item.qtyToTake, voucher: voucher, note: note || sourceLot.note, customer: lotCustomer });
                     sourceLot.qty -= item.qtyToTake;
 
-                    detailsArr.push({ name: finalName, qty: item.qtyToTake, type: 'XUẤT', contract: sourceLot.contract, voucher: voucher, pos: locDisplay, partner: `Chuyển sang ${destDisplay}`, note: note });
-                    detailsArr.push({ name: finalName, qty: item.qtyToTake, type: 'NHẬP', contract: sourceLot.contract, voucher: voucher, pos: destDisplay, partner: `Nhận từ ${locDisplay}`, note: note });
+                    detailsArr.push({ name: finalName, qty: item.qtyToTake, type: 'XUẤT', contract: sourceLot.contract, voucher: voucher, pos: locDisplay, partner: lotCustomer, note: note });
+                    detailsArr.push({ name: finalName, qty: item.qtyToTake, type: 'NHẬP', contract: sourceLot.contract, voucher: voucher, pos: destDisplay, partner: lotCustomer, note: note });
                 });
                 let finalCustStr = Array.from(involvedCustomers).join(", ");
                 window.logs.unshift({ time: timeStr, dateRaw: currentDayStr, action: "CHUYỂN VỊ TRÍ", pos: `Từ ${locDisplay} ➜ ${destDisplay}`, name: `Di chuyển -> [ ${summaryLogText} ]`, customer: finalCustStr, note: note, qty: totalProcessedQty, snapshot: inventorySnapshot, details: detailsArr, voucher: voucher });
@@ -936,28 +958,32 @@
 
                 let rootContract = window.inventory[sourceKey][itemsToProcess[0].originalIdx].contract;
                 let inText = "";
+                let involvedCustomers = new Set();
                 itemsToProcess.forEach(item => {
                     let sourceLot = window.inventory[sourceKey][item.originalIdx];
                     let finalName = formatItemName(sourceLot);
                     inText += `${finalName} (-${item.qtyToTake}); `;
+                    
+                    let lotCustomer = sourceLot.customer || 'Nhập Kho chung';
+                    involvedCustomers.add(lotCustomer);
+                    
                     sourceLot.qty -= item.qtyToTake;
-
-                    detailsArr.push({ name: finalName, qty: item.qtyToTake, type: 'XUẤT', contract: sourceLot.contract, voucher: voucher, pos: locDisplay, partner: "Nguyên liệu cắt ghép", note: note });
+                    detailsArr.push({ name: finalName, qty: item.qtyToTake, type: 'XUẤT', contract: sourceLot.contract, voucher: voucher, pos: locDisplay, partner: lotCustomer, note: note });
                 });
 
+                let finalCustStr = customer || Array.from(involvedCustomers).join(", ");
                 let outText = "";
-                let finalCustomer = customer || "Nhập Kho chung";
                 outputCreated.forEach(outItem => {
                     let finalName = formatItemName(outItem);
                     outText += `${finalName} (+${outItem.qty}); `;
                     let finalNote = note ? `${note} (Từ Cắt/Ghép)` : "Tạo từ Cắt/Ghép";
-                    window.inventory[destKey].push({ name: outItem.name, qty: outItem.qty, itemType: outItem.itemType, lengthPerRoll: outItem.lengthPerRoll, contract: `GC-${rootContract}`, voucher: voucher, dateAction: currentDayStr, customer: finalCustomer, note: finalNote, isCustomerItem: false });
+                    window.inventory[destKey].push({ name: outItem.name, qty: outItem.qty, itemType: outItem.itemType, lengthPerRoll: outItem.lengthPerRoll, contract: `GC-${rootContract}`, voucher: voucher, dateAction: currentDayStr, customer: finalCustStr, note: finalNote, isCustomerItem: false });
 
-                    detailsArr.push({ name: finalName, qty: outItem.qty, type: 'NHẬP', contract: `GC-${rootContract}`, voucher: voucher, pos: destDisplay, partner: finalCustomer, note: note });
+                    detailsArr.push({ name: finalName, qty: outItem.qty, type: 'NHẬP', contract: `GC-${rootContract}`, voucher: voucher, pos: destDisplay, partner: finalCustStr, note: note });
                 });
                 
                 let scrapText = document.getElementById("gc-summary").innerText;
-                window.logs.unshift({ time: timeStr, dateRaw: currentDayStr, action: "GIA CÔNG", pos: `Tại ${locDisplay} ➜ ${destDisplay}`, name: `Gốc: [${inText}] ➜ Mới: [${outText}]`, customer: finalCustomer, note: note, qty: `Tạo: ${totalOutQty}`, snapshot: inventorySnapshot, details: detailsArr, voucher: voucher });
+                window.logs.unshift({ time: timeStr, dateRaw: currentDayStr, action: "GIA CÔNG", pos: `Tại ${locDisplay} ➜ ${destDisplay}`, name: `Gốc: [${inText}] ➜ Mới: [${outText}]`, customer: finalCustStr, note: note, qty: `Tạo: ${totalOutQty}`, snapshot: inventorySnapshot, details: detailsArr, voucher: voucher });
             }
         }
         
@@ -968,7 +994,6 @@
         syncWithCloud("write");
     }
 
-    // TÍCH HỢP GHI CHÚ VÀO POPUP XEM CHI TIẾT LỊCH SỬ
     window.showLogDetailModal = function(index) {
         const log = window.logs[index];
         if(!log) return;
@@ -1078,9 +1103,10 @@
         }
     }
 
+    // --- BẢNG NHẬT KÝ ĐƯỢC CHÈN THÊM CỘT KHÁCH HÀNG NGOÀI CÙNG ---
     function renderHistoryTable() {
         const tbody = document.getElementById("history-table-body"); tbody.innerHTML = "";
-        if(window.logs.length === 0) { tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#9ca3af;">Chưa có nhật ký hoạt động.</td></tr>`; return; }
+        if(window.logs.length === 0) { tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#9ca3af; padding: 20px;">Chưa có nhật ký hoạt động.</td></tr>`; return; }
         window.logs.slice(0, 100).forEach((log, index) => {
             let bd = log.action === "NHẬP" ? `<span class="badge badge-nhap">NHẬP HÀNG</span>` : log.action === "XUẤT" ? `<span class="badge badge-xuat">XUẤT HÀNG</span>` : log.action === "GIA CÔNG" ? `<span class="badge badge-giacong">CẮT GHÉP</span>` : `<span class="badge badge-chuyen">CHUYỂN Ô</span>`;
             const row = document.createElement("tr");
@@ -1091,15 +1117,20 @@
 
             let displayNameText = log.name;
             if(log.details && log.details.length > 1) {
-                displayNameText = `<span style="color:var(--purple); font-weight:bold;">📋 [ĐƠN GỘP ĐA LÔ]</span> Gồm ${log.details.length} mặt hàng chi tiết độc lập`;
+                displayNameText = `<span style="color:var(--purple); font-weight:bold;">📋 [ĐƠN GỘP ĐA LÔ]</span> Gồm ${log.details.length} mã hàng`;
             }
 
+            // Phân biệt màu sắc khách hàng
+            let customerText = log.customer || '---';
+            let custColor = (customerText === "Nhập Kho chung" || customerText.toLowerCase() === "nội bộ") ? "#059669" : "#d97706";
+
             row.innerHTML = `
-                <td><small>${log.time}</small></td>
+                <td><small style="color:#64748b;">${log.time.split(' ')[0]}</small><br><b>${log.time.split(' ')[1] || ''}</b></td>
                 <td>${bd}</td>
                 <td><small><b>${log.pos}</b></small></td>
-                <td>${displayNameText} (Phiếu: ${log.voucher || '---'})</td>
-                <td style="font-weight:bold; text-align:right; color:${log.action==='NHẬP'?'var(--success)':log.action==='XUẤT'?'var(--danger)':'#333'}">${log.qty}</td>
+                <td>${displayNameText}<br><small style="color:#64748b;">Phiếu: <b>${log.voucher || '---'}</b></small></td>
+                <td><span style="color:${custColor}; font-weight:700; font-size:11px;">👤 ${customerText}</span></td>
+                <td style="font-weight:bold; text-align:right; font-size:14px; color:${log.action==='NHẬP'?'var(--success)':log.action==='XUẤT'?'var(--danger)':'#333'}">${log.qty}</td>
                 <td style="text-align:center;"><button class="btn-delete-log" onclick="event.stopPropagation(); deleteSpecificLogStep(${index})">❌ Hoàn tác</button></td>
             `;
             tbody.appendChild(row);
