@@ -141,6 +141,7 @@
 </head>
 <body>
 
+<!-- GIAO DIỆN MÀN HÌNH KHÓA VÒNG NGOÀI CHỐNG KHÁCH LẠ -->
 <div id="login-screen">
     <div class="login-box">
         <h2>🔒 HỆ THỐNG KHO NỘI BỘ</h2>
@@ -159,7 +160,7 @@
         </div>
         <div class="actions-bar">
             <input type="text" id="search-input" class="search-box" placeholder="🔍 Tìm Mã hàng, Số HĐ, Số Phiếu..." oninput="handleSearch()">
-            <button class="btn-primary" style="background:#0284c7; box-shadow: 0 2px 4px rgba(0,0,0,0.2);" onclick="syncWithCloud('read')">🔄 Làm Mới Dữ Liệu</button>
+            <button class="btn-primary" style="background:#0284c7; box-shadow: 0 2px 4px rgba(0,0,0,0.2);" onclick="syncWithCloud('read')">🔄 Làm Mới Dữ Luệu</button>
             <button class="btn-dark" onclick="triggerWebBackupRollback()">⏪ Khôi Phục Lịch Sử</button>
         </div>
     </header>
@@ -179,6 +180,7 @@
     </div>
 
     <div class="main-layout">
+        <!-- BÊN TRÁI -->
         <div>
             <div class="warehouse-selector">
                 <button class="tab-btn active" id="btn-kho-sx" onclick="switchWarehouse('Kho sản xuất')">🏭 KHO SẢN XUẤT</button>
@@ -226,6 +228,7 @@
             </div>
         </div>
 
+        <!-- BÊN PHẢI -->
         <div class="panel-right">
             <div class="card" id="detail-card" style="border: 1px solid var(--primary);">
                 <div class="card-title" style="color: var(--primary);">
@@ -235,6 +238,7 @@
                 <div id="detail-content"><p style="color: #666; font-style: italic;">Bấm chọn một ô trên sơ đồ bãi kho để xem chi tiết danh sách từng mã hàng.</p></div>
             </div>
 
+            <!-- FORM CHÍNH -->
             <div class="card" id="action-card" style="display:none; border: 2px solid #2563eb;">
                 <div class="card-title" id="action-title">Thao tác kho</div>
                 <form id="warehouse-form">
@@ -249,6 +253,7 @@
                         <div class="form-group"><label style="color:var(--danger);">Số Phiếu Thao Tác *</label><input type="text" id="form-voucher" class="form-control" placeholder="Ví dụ: PN-001, PX-002"></div>
                     </div>
 
+                    <!-- NHẬP HÀNG -->
                     <div id="nhap-info-fields" style="display:none; background: #f0fdf4; padding: 10px; border-radius: 6px; border: 1px solid #bbf7d0; margin-bottom: 10px;">
                         <p style="font-weight:bold; font-size:12px; color:var(--success); margin-bottom:6px;">📋 Chi tiết khai báo Lô Nhập Hàng:</p>
                         
@@ -282,6 +287,7 @@
                         <div class="form-group"><label>Ghi chú chi tiết</label><input type="text" id="form-note" class="form-control"></div>
                     </div>
 
+                    <!-- DANH SÁCH LÔ GỐC -->
                     <div id="select-lot-wrapper" style="display:none; background:#fffbf0; padding:10px; border-radius:6px; border:1px solid #fef08a; margin-bottom:10px;">
                         <label id="select-lot-title" style="font-weight:bold; font-size:12px; color:var(--warning); display:block; margin-bottom:5px;">📍 Nhập số lượng lấy ra tại các lô tương ứng bên dưới:</label>
                         <div style="max-height:180px; overflow-y:auto; border:1px solid #cbd5e1; border-radius:4px;">
@@ -298,6 +304,7 @@
                         </div>
                     </div>
 
+                    <!-- GIA CÔNG / CẮT GHÉP ĐẦU RA -->
                     <div id="giacong-output-fields" style="display:none;" class="giacong-box">
                         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid #a5f3fc; margin-bottom:8px; padding-bottom:4px;">
                             <h4 style="border:none; margin:0; padding:0;">✂️ KHAI BÁO HÀNG ĐẦU RA SAU CẮT/GHÉP</h4>
@@ -326,6 +333,7 @@
                         </div>
                     </div>
 
+                    <!-- CHUYỂN VỊ TRÍ -->
                     <div id="transfer-destination" style="display: none; border-top: 1px solid #eee; padding-top: 10px; margin-bottom: 10px;">
                         <p style="font-weight: bold; font-size: 13px; color: var(--primary); margin-bottom: 8px;">📍 Ô ĐÍCH ĐẾN CHUYỂN VỊ TRÍ:</p>
                         <div class="form-row">
@@ -342,6 +350,7 @@
                 </form>
             </div>
 
+            <!-- BẢNG THỐNG KÊ PIVOT -->
             <div class="card">
                 <div class="card-title">📊 Bảng Tổng Hợp Hàng Hóa Theo Vị Trí Ô Kho</div>
                 <div class="table-container" style="max-height: 380px;">
@@ -370,11 +379,13 @@
     </div>
 </div>
 
+<!-- GIAO DIỆN MÀN HÌNH POPUP XEM CHI TIẾT PHIẾU XUẤT NHẬP GỘP -->
 <div id="log-detail-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999999; justify-content:center; align-items:center;" onclick="this.style.display='none'">
     <div class="card" style="width:600px; max-width:95%; margin-bottom:0; box-shadow:0 10px 30px rgba(0,0,0,0.3); border-top: 4px solid var(--primary);" onclick="event.stopPropagation()">
         <div class="card-title" style="color:var(--primary); font-size:16px;">📋 CHI TIẾT CHỨNG TỪ HOẠT ĐỘNG KHO</div>
         <div id="log-modal-content" style="margin-top:12px; font-size:13px; line-height:1.6;">
-            </div>
+            <!-- Dữ liệu chi tiết đơn gộp sẽ được vẽ bằng JS ở đây -->
+        </div>
         <div style="text-align:right; margin-top:20px; border-top:1px solid #eee; padding-top:10px;">
             <button class="btn-primary" style="background:#475569;" onclick="document.getElementById('log-detail-modal').style.display='none'">Đóng Màn Hình</button>
         </div>
@@ -785,6 +796,10 @@
 
         let timeStr = new Date().toLocaleString('vi-VN');
         let currentDayStr = new Date().toISOString().substring(0, 10);
+
+        // BẢO VỆ CHỐNG LỖI KHI NHẬP VÀO Ô TRỐNG
+        if (!window.inventory[sourceKey]) { window.inventory[sourceKey] = []; }
+
         let inventorySnapshot = JSON.stringify(window.inventory);
         let detailsArr = []; 
 
@@ -805,7 +820,7 @@
 
             detailsArr.push({ name: finalName, qty: qty, type: 'NHẬP', contract: contract, voucher: voucher, pos: locDisplay, partner: customer || "Nội bộ" });
 
-            window.logs.unshift({ time: timeStr, dateRaw: dateAction, action: "NHẬP", pos: locDisplay, name: `Mã: ${finalName} (HĐ: ${contract})`, customer: customer || "---", qty: `+${qty}`, snapshot: inventorySnapshot, details: detailsArr, voucher: voucher });
+            window.logs.unshift({ time: timeStr, dateRaw: dateAction, action: "NHẬP", pos: locDisplay, name: `Mã: ${finalName}`, customer: customer || "---", qty: `+${qty}`, snapshot: inventorySnapshot, details: detailsArr, voucher: voucher });
         } 
         else {
             const inputs = document.querySelectorAll(".multi-lot-input");
@@ -897,7 +912,6 @@
         syncWithCloud("write");
     }
 
-    // 🔥 HÀM MỚI: BẬT MÀN HÌNH POPUP XEM CHI TIẾT TỪNG MẶT HÀNG TRONG ĐƠN GỘP
     window.showLogDetailModal = function(index) {
         const log = window.logs[index];
         if(!log) return;
@@ -908,14 +922,13 @@
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; background:#f8fafc; padding:12px; border-radius:8px; margin-bottom:15px; border:1px solid #e2e8f0;">
                 <div><b>⏱️ Thời gian:</b> ${log.time}</div>
                 <div><b>🎫 Số Phiếu Gốc:</b> <span style="color:var(--danger); font-weight:bold;">${log.voucher || '---'}</span></div>
-                <div><b>⚡ Loại hoạt động:</b> ${log.action}</div>
-                <div><b>👥 Đối tác / Ghi chú:</b> ${log.customer || 'Nội bộ'}</div>
-                <div style="grid-column: span 2;"><b>📍 Vị trí bãi bốc dỡ:</b> ${log.pos}</div>
+                <div><b>⚡ Hoạt động:</b> ${log.action}</div>
+                <div><b>👥 Đối tác/Ghi chú:</b> ${log.customer || 'Nội bộ'}</div>
+                <div style="grid-column: span 2;"><b>📍 Vị trí bãi:</b> ${log.pos}</div>
             </div>
             <p style="font-weight:bold; color:var(--primary); margin-bottom:6px;">📦 CHI TIẾT DANH SÁCH BIẾN ĐỘNG HÀNG HÓA VÀO/RA KHO:</p>
         `;
         
-        // Nếu log có chứa mảng chi tiết (Đơn gộp nâng cấp)
         if(log.details && log.details.length > 0) {
             html += `
                 <table style="width:100%; font-size:12px; border-collapse:collapse; margin-top:5px; background:white;">
@@ -943,7 +956,6 @@
             });
             html += `</tbody></table>`;
         } else {
-            // Hỗ trợ hiển thị các dòng log đơn cũ từ phiên bản trước chưa có mảng gộp
             html += `
                 <div style="background:#fff7ed; padding:15px; border-radius:8px; border:1px solid #ffedd5; color:#c2410c; font-style:italic;">
                     ${log.name} <br><b>Tổng số lượng biến động:</b> ${log.qty}
@@ -1008,7 +1020,6 @@
         }
     }
 
-    // IN RA BẢNG NHẬT KÝ CHI TIẾT, HỖ TRỢ CLICK VÀO DÒNG
     function renderHistoryTable() {
         const tbody = document.getElementById("history-table-body"); tbody.innerHTML = "";
         if(window.logs.length === 0) { tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#9ca3af;">Chưa có nhật ký hoạt động.</td></tr>`; return; }
@@ -1016,18 +1027,16 @@
             let bd = log.action === "NHẬP" ? `<span class="badge badge-nhap">NHẬP HÀNG</span>` : log.action === "XUẤT" ? `<span class="badge badge-xuat">XUẤT HÀNG</span>` : log.action === "GIA CÔNG" ? `<span class="badge badge-giacong">CẮT GHÉP</span>` : `<span class="badge badge-chuyen">CHUYỂN Ô</span>`;
             const row = document.createElement("tr");
             
-            // THIẾT LẬP HIỆU ỨNG CLICK VÀO DÒNG NHẬT KÝ
+            // Gắn sự kiện click vào dòng để xem chi tiết
             row.style.cursor = "pointer";
             row.setAttribute("onclick", `showLogDetailModal(${index})`);
             row.setAttribute("title", "Click vào dòng này để bung xem chi tiết phiếu đơn gộp đầy đủ");
 
-            // Rút gọn text ngoài bảng nếu là đơn gộp đa hàng hóa cho thoáng mắt
             let displayNameText = log.name;
             if(log.details && log.details.length > 1) {
                 displayNameText = `<span style="color:var(--purple); font-weight:bold;">📋 [ĐƠN GỘP ĐA LÔ]</span> Gồm ${log.details.length} mặt hàng chi tiết độc lập`;
             }
 
-            // Dùng event.stopPropagation() ở nút hoàn tác để tránh bị nhảy popup xem chi tiết khi muốn xóa bước
             row.innerHTML = `
                 <td><small>${log.time}</small></td>
                 <td>${bd}</td>
