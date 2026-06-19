@@ -184,6 +184,7 @@
     </div>
 
     <div class="main-layout">
+        <!-- BÊN TRÁI -->
         <div>
             <div class="warehouse-selector">
                 <button class="tab-btn active" id="btn-kho-sx" onclick="switchWarehouse('Kho sản xuất')">🏭 KHO SẢN XUẤT</button>
@@ -204,7 +205,7 @@
                         </div>
                         <div>
                             <div class="side-title">➡️ DÃY PHẢI</div>
-                            <div class="slots-row-layout" id="grid-right"></div>
+                            <div id="grid-right"></div>
                         </div>
                     </div>
                     <div id="end-merged-block" class="end-warehouse-block" style="display: none;"></div>
@@ -232,6 +233,7 @@
             </div>
         </div>
 
+        <!-- BÊN PHẢI -->
         <div class="panel-right">
             <div class="card" id="detail-card" style="border: 1px solid var(--primary);">
                 <div class="card-title" style="color: var(--primary);">
@@ -241,6 +243,7 @@
                 <div id="detail-content"><p style="color: #666; font-style: italic;">Bấm chọn một ô trên sơ đồ bãi kho để xem chi tiết danh sách từng mã hàng.</p></div>
             </div>
 
+            <!-- FORM CHÍNH -->
             <div class="card" id="action-card" style="display:none; border: 2px solid #2563eb;">
                 <div class="card-title" id="action-title">Thao tác kho</div>
                 <form id="warehouse-form">
@@ -255,6 +258,7 @@
                         <div class="form-group"><label style="color:var(--danger);">Số Phiếu Thao Tác *</label><input type="text" id="form-voucher" class="form-control" placeholder="Ví dụ: PN-001, PX-002"></div>
                     </div>
 
+                    <!-- NHẬP HÀNG -->
                     <div id="nhap-info-fields" style="display:none; background: #f0fdf4; padding: 10px; border-radius: 6px; border: 1px solid #bbf7d0; margin-bottom: 10px;">
                         <p style="font-weight:bold; font-size:12px; color:var(--success); margin-bottom:6px;">📋 Chi tiết khai báo Lô Nhập Hàng:</p>
                         
@@ -287,8 +291,10 @@
                         </div>
                     </div>
 
+                    <!-- DANH SÁCH LÔ GỐC (DÙNG CHO XUẤT/CHUYỂN/GIA CÔNG/BÁO LỖI) -->
                     <div id="select-lot-wrapper" style="display:none; background:#fffbf0; padding:10px; border-radius:6px; border:1px solid #fef08a; margin-bottom:10px;">
                         
+                        <!-- CÔNG TẮC ĐIỀU HƯỚNG MỤC ĐÍCH XUẤT -->
                         <div class="form-group" id="export-type-wrapper" style="display:none; margin-bottom:12px; border-bottom:1px dashed #ccc; padding-bottom:12px;">
                             <label style="color:var(--danger); font-size:12px;">📌 BẠN ĐANG MUỐN LÀM GÌ? *</label>
                             <select id="form-export-type" class="form-control" onchange="changeExportType()" style="border: 2px solid var(--danger); font-weight:bold; color:var(--danger); font-size:13px; cursor:pointer;">
@@ -312,6 +318,7 @@
                             </table>
                         </div>
 
+                        <!-- CÔNG TẮC DI CHUYỂN HÀNG LỖI VÀO BÃI RÁC -->
                         <div id="error-move-wrapper" style="display:none; margin-top:10px;">
                             <label style="display:flex; align-items:center; gap:6px; font-weight:bold; color:var(--danger); cursor:pointer;">
                                 <input type="checkbox" id="chk-move-error-to-trash" style="width:16px; height:16px;" checked> Tự động chuyển Hàng Lỗi vào Bãi Phế Phẩm (Khu Ô 16-17)
@@ -319,6 +326,7 @@
                         </div>
                     </div>
 
+                    <!-- GIA CÔNG / CẮT GHÉP ĐẦU RA -->
                     <div id="giacong-output-fields" style="display:none;" class="giacong-box">
                         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid #a5f3fc; margin-bottom:8px; padding-bottom:4px;">
                             <h4 style="border:none; margin:0; padding:0;">✂️ KHAI BÁO HÀNG ĐẦU RA SAU CẮT/GHÉP</h4>
@@ -347,6 +355,7 @@
                         </div>
                     </div>
 
+                    <!-- CHUYỂN VỊ TRÍ -->
                     <div id="transfer-destination" style="display: none; border-top: 1px solid #eee; padding-top: 10px; margin-bottom: 10px;">
                         <p style="font-weight: bold; font-size: 13px; color: var(--primary); margin-bottom: 8px;">📍 Ô ĐÍCH ĐẾN CHUYỂN VỊ TRÍ:</p>
                         <div class="form-row">
@@ -356,6 +365,7 @@
                         <div class="form-group" style="margin-top:5px;"><label>Tên ô đích chính xác (Ví dụ: 5 hoặc Khoang 2)</label><input type="text" id="dest-slot-num" class="form-control"></div>
                     </div>
 
+                    <!-- KHU VỰC KHÁCH HÀNG & GHI CHÚ CHUNG -->
                     <div class="form-row" style="margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 10px; margin-bottom: 15px;">
                         <div class="form-group" id="customer-input-wrapper">
                             <label id="dynamic-customer-label">Khách Hàng (Tên KH / Nhập Kho chung)</label>
@@ -374,6 +384,7 @@
                 </form>
             </div>
 
+            <!-- BẢNG THỐNG KÊ PIVOT -->
             <div class="card">
                 <div class="card-title">📊 Bảng Tổng Hợp Hàng Hóa Theo Vị Trí Ô Kho</div>
                 <div class="table-container" style="max-height: 380px;">
@@ -725,6 +736,7 @@
         const leftRowWrapper = document.getElementById("left-row-wrapper"); const gridRight = document.getElementById("grid-right"); const endBlock = document.getElementById("end-merged-block"); const hallwayLine = document.getElementById("hallway-line"); const doorLabel = document.getElementById("door-label");
         leftRowWrapper.innerHTML = ""; gridRight.innerHTML = "";
 
+        // NÂNG CẤP GIAO DIỆN LƯỚI CHO DÃY TRÁI VÀ DÃY PHẢI (ÉP TỶ LỆ TUYỆT ĐỐI)
         if (window.currentWarehouse === "Kho sản xuất") {
             endBlock.style.display = "flex"; doorLabel.innerText = "🚪 CỬA KHO SX"; hallwayLine.innerText = "🚶 LỐI ĐI NỘI BỘ KHO ➜ ➜ ➜";
             
@@ -762,7 +774,7 @@
         } else {
             endBlock.style.display = "none"; doorLabel.innerText = "🚪 CỬA GIỮA CHÍNH"; hallwayLine.innerText = "🚶 LỐI ĐI TRUNG TÂM PHÂN HAI DÃY KHU HÀNG HÓA ➜ ➜ ➜";
             
-            // XÓA BỎ CÁC BOX BAO BỌC GÂY LỖI TỶ LỆ, GỘP CHUNG VÀO 1 DÒNG CÙNG FLEX BOX CẤP 1
+            // XÓA LỖI LỒNG GRID, DÀN TRỰC TIẾP LÊN GRID CONTAINER CHÍNH
             const leftRow = document.createElement("div"); leftRow.className = "slots-row-layout";
             for(let i = 1; i <= 13; i++) leftRow.appendChild(createNormalSlot("Dãy Trái", i));
             COMPARTMENTS_LIST.forEach(compName => { leftRow.appendChild(createCompartmentSlot(compName)); });
@@ -770,6 +782,9 @@
             
             const rightRow = document.createElement("div"); rightRow.className = "slots-row-layout";
             for(let i = 1; i <= 17; i++) rightRow.appendChild(createNormalSlot("Dãy Phải", i));
+            
+            // Fix triệt để lỗi Grid bị lồng vào Grid ở đây (bằng cách xóa Grid class ở HTML Dãy Phải)
+            gridRight.className = ""; // Đảm bảo wrapper ngoài không có class lưới
             gridRight.appendChild(rightRow);
         }
         renderInventoryTable();
