@@ -33,14 +33,22 @@
         .tab-btn.active { background: white; color: var(--primary); border-bottom: 3px solid var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .warehouse-map { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .map-title { font-size: 16px; font-weight: bold; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--gray-200); }
+        
         .grid-flex-container { display: flex; background: #fafafa; padding: 10px; border-radius: 8px; border: 2px dashed #ccc; gap: 8px; align-items: stretch; width: 100%; }
         .main-rows-area { display: flex; flex-direction: column; gap: 10px; flex-grow: 1; width: 100%; }
         .slots-row-layout { display: flex; gap: 4px; width: 100%; }
-        .hh-left-container { display: flex; gap: 4px; width: 100%; }
-        .standard-slots-part { display: flex; gap: 4px; flex: 13; }
-        .compartments-slots-part { display: flex; gap: 4px; flex: 4; }
         
-        .slot { background: white; border: 1px solid var(--gray-200); border-radius: 5px; padding: 6px 4px; text-align: center; cursor: pointer; transition: all 0.2s; min-height: 125px; flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; }
+        /* CĂN CHỈNH TỶ LỆ VÀNG CHO Ô VÀ KHOANG */
+        .slot { 
+            background: white; border: 1px solid var(--gray-200); border-radius: 5px; padding: 6px 4px; text-align: center; cursor: pointer; transition: all 0.2s; min-height: 125px; 
+            flex: 2 1 0%; /* Ô bình thường chiếm 2 phần diện tích */
+            min-width: 0; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; 
+        }
+        .slot.sub-compartment { 
+            background: #f0fdf4; border-color: #4ade80; 
+            flex: 1 1 0%; /* Khoang nhỏ chiếm 1 phần diện tích (Đúng bằng 1 nửa ô bình thường) */
+        }
+        
         .slot.search-fade { opacity: 0.15; transform: scale(0.96); }
         .slot:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .slot.has-item { background: #eff6ff; border-color: #bfdbfe; }
@@ -50,7 +58,6 @@
         .slot.special-zone { background: var(--special-bg); border-color: var(--special-border); }
         .slot.special-zone .slot-label { color: #9a3412; font-weight: bold; font-size: 9px; line-height: 1.1; margin-bottom: 2px; }
         
-        .slot.sub-compartment { background: #f0fdf4; border-color: #4ade80; min-height: 125px; }
         .slot.sub-compartment.has-customer-item { background: var(--purple-light); border-color: #d8b4fe; }
         .slot.sub-compartment.has-error-item { background: #fee2e2; border-color: #fca5a5; }
         .slot.sub-compartment .slot-num { color: #16a34a; font-size: 8px; font-weight: 900; background: #e8f5e9; padding: 1px 0; border-radius: 3px; }
@@ -170,7 +177,6 @@
     </div>
 
     <div class="main-layout">
-        <!-- BÊN TRÁI -->
         <div>
             <div class="warehouse-selector">
                 <button class="tab-btn active" id="btn-kho-sx" onclick="switchWarehouse('Kho sản xuất')">🏭 KHO SẢN XUẤT</button>
@@ -198,7 +204,6 @@
                 </div>
             </div>
 
-            <!-- BẢNG NHẬT KÝ -->
             <div class="card" style="margin-top: 15px;">
                 <div class="card-title">📜 Nhật Ký Hoạt Động Xuất Nhập Chi Tiết (Bấm vào dòng để xem chi tiết)</div>
                 <div class="table-container" style="max-height: 300px;">
@@ -220,7 +225,6 @@
             </div>
         </div>
 
-        <!-- BÊN PHẢI -->
         <div class="panel-right">
             <div class="card" id="detail-card" style="border: 1px solid var(--primary);">
                 <div class="card-title" style="color: var(--primary);">
@@ -230,7 +234,6 @@
                 <div id="detail-content"><p style="color: #666; font-style: italic;">Bấm chọn một ô trên sơ đồ bãi kho để xem chi tiết danh sách từng mã hàng.</p></div>
             </div>
 
-            <!-- FORM CHÍNH -->
             <div class="card" id="action-card" style="display:none; border: 2px solid #2563eb;">
                 <div class="card-title" id="action-title">Thao tác kho</div>
                 <form id="warehouse-form">
@@ -245,7 +248,6 @@
                         <div class="form-group"><label style="color:var(--danger);">Số Phiếu Thao Tác *</label><input type="text" id="form-voucher" class="form-control" placeholder="Ví dụ: PN-001, PX-002"></div>
                     </div>
 
-                    <!-- NHẬP HÀNG -->
                     <div id="nhap-info-fields" style="display:none; background: #f0fdf4; padding: 10px; border-radius: 6px; border: 1px solid #bbf7d0; margin-bottom: 10px;">
                         <p style="font-weight:bold; font-size:12px; color:var(--success); margin-bottom:6px;">📋 Chi tiết khai báo Lô Nhập Hàng:</p>
                         
@@ -278,10 +280,8 @@
                         </div>
                     </div>
 
-                    <!-- DANH SÁCH LÔ GỐC (DÙNG CHO XUẤT/CHUYỂN/GIA CÔNG/BÁO LỖI) -->
                     <div id="select-lot-wrapper" style="display:none; background:#fffbf0; padding:10px; border-radius:6px; border:1px solid #fef08a; margin-bottom:10px;">
                         
-                        <!-- CÔNG TẮC ĐIỀU HƯỚNG MỤC ĐÍCH XUẤT -->
                         <div class="form-group" id="export-type-wrapper" style="display:none; margin-bottom:12px; border-bottom:1px dashed #ccc; padding-bottom:12px;">
                             <label style="color:var(--danger); font-size:12px;">📌 BẠN ĐANG MUỐN LÀM GÌ? *</label>
                             <select id="form-export-type" class="form-control" onchange="changeExportType()" style="border: 2px solid var(--danger); font-weight:bold; color:var(--danger); font-size:13px; cursor:pointer;">
@@ -305,7 +305,6 @@
                             </table>
                         </div>
 
-                        <!-- CÔNG TẮC DI CHUYỂN HÀNG LỖI VÀO BÃI RÁC -->
                         <div id="error-move-wrapper" style="display:none; margin-top:10px;">
                             <label style="display:flex; align-items:center; gap:6px; font-weight:bold; color:var(--danger); cursor:pointer;">
                                 <input type="checkbox" id="chk-move-error-to-trash" style="width:16px; height:16px;" checked> Tự động chuyển Hàng Lỗi vào Bãi Phế Phẩm (Khu Ô 16-17)
@@ -313,7 +312,6 @@
                         </div>
                     </div>
 
-                    <!-- GIA CÔNG / CẮT GHÉP ĐẦU RA -->
                     <div id="giacong-output-fields" style="display:none;" class="giacong-box">
                         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid #a5f3fc; margin-bottom:8px; padding-bottom:4px;">
                             <h4 style="border:none; margin:0; padding:0;">✂️ KHAI BÁO HÀNG ĐẦU RA SAU CẮT/GHÉP</h4>
@@ -342,7 +340,6 @@
                         </div>
                     </div>
 
-                    <!-- CHUYỂN VỊ TRÍ -->
                     <div id="transfer-destination" style="display: none; border-top: 1px solid #eee; padding-top: 10px; margin-bottom: 10px;">
                         <p style="font-weight: bold; font-size: 13px; color: var(--primary); margin-bottom: 8px;">📍 Ô ĐÍCH ĐẾN CHUYỂN VỊ TRÍ:</p>
                         <div class="form-row">
@@ -352,7 +349,6 @@
                         <div class="form-group" style="margin-top:5px;"><label>Tên ô đích chính xác (Ví dụ: 5 hoặc Khoang 2)</label><input type="text" id="dest-slot-num" class="form-control"></div>
                     </div>
 
-                    <!-- KHU VỰC KHÁCH HÀNG & GHI CHÚ CHUNG -->
                     <div class="form-row" style="margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 10px; margin-bottom: 15px;">
                         <div class="form-group" id="customer-input-wrapper">
                             <label id="dynamic-customer-label">Khách Hàng (Tên KH / Nhập Kho chung)</label>
@@ -371,7 +367,6 @@
                 </form>
             </div>
 
-            <!-- BẢNG THỐNG KÊ PIVOT -->
             <div class="card">
                 <div class="card-title">📊 Bảng Tổng Hợp Hàng Hóa Theo Vị Trí Ô Kho</div>
                 <div class="table-container" style="max-height: 380px;">
@@ -723,11 +718,14 @@
         const leftRowWrapper = document.getElementById("left-row-wrapper"); const gridRight = document.getElementById("grid-right"); const endBlock = document.getElementById("end-merged-block"); const hallwayLine = document.getElementById("hallway-line"); const doorLabel = document.getElementById("door-label");
         leftRowWrapper.innerHTML = ""; gridRight.innerHTML = "";
 
+        // NÂNG CẤP GIAO DIỆN LƯỚI CHO DÃY TRÁI VÀ DÃY PHẢI (ÉP TỶ LỆ 2 KHOANG = 1 Ô)
         if (window.currentWarehouse === "Kho sản xuất") {
             endBlock.style.display = "flex"; doorLabel.innerText = "🚪 CỬA KHO SX"; hallwayLine.innerText = "🚶 LỐI ĐI NỘI BỘ KHO ➜ ➜ ➜";
-            const normalRow = document.createElement("div"); normalRow.className = "slots-row-layout";
-            for(let i = 1; i <= 15; i++) normalRow.appendChild(createNormalSlot("Dãy Trái", i));
-            leftRowWrapper.appendChild(normalRow);
+            
+            const leftRow = document.createElement("div"); leftRow.className = "slots-row-layout";
+            for(let i = 1; i <= 15; i++) leftRow.appendChild(createNormalSlot("Dãy Trái", i));
+            leftRowWrapper.appendChild(leftRow);
+            
             for(let i = 1; i <= 15; i++) gridRight.appendChild(createNormalSlot("Dãy Phải", i));
             
             const fullKey = "Kho sản xuất_Chung_Ô16-17"; const lots = window.inventory[fullKey] || [];
@@ -755,13 +753,13 @@
             endBlock.innerHTML = `<div class="slot-num">CUỐI DÃY</div><div style="font-weight:bold; font-size:10px; color:#ef4444;">🗑️ Phế Phẩm</div>${generateSlotItemsHtml(lots)}`;
         } else {
             endBlock.style.display = "none"; doorLabel.innerText = "🚪 CỬA GIỮA CHÍNH"; hallwayLine.innerText = "🚶 LỐI ĐI TRUNG TÂM PHÂN HAI DÃY KHU HÀNG HÓA ➜ ➜ ➜";
-            const hhLeftContainer = document.createElement("div"); hhLeftContainer.className = "hh-left-container";
-            const standardPart = document.createElement("div"); standardPart.className = "standard-slots-part";
-            for(let i = 1; i <= 13; i++) standardPart.appendChild(createNormalSlot("Dãy Trái", i));
-            hhLeftContainer.appendChild(standardPart);
-            const compsPart = document.createElement("div"); compsPart.className = "compartments-slots-part";
-            COMPARTMENTS_LIST.forEach(compName => { compsPart.appendChild(createCompartmentSlot(compName)); });
-            hhLeftContainer.appendChild(compsPart); leftRowWrapper.appendChild(hhLeftContainer);
+            
+            // XÓA BỎ CÁC BOX BAO BỌC GÂY LỖI TỶ LỆ, GỘP CHUNG VÀO 1 DÒNG CÙNG FLEX BOX CẤP 1
+            const leftRow = document.createElement("div"); leftRow.className = "slots-row-layout";
+            for(let i = 1; i <= 13; i++) leftRow.appendChild(createNormalSlot("Dãy Trái", i));
+            COMPARTMENTS_LIST.forEach(compName => { leftRow.appendChild(createCompartmentSlot(compName)); });
+            leftRowWrapper.appendChild(leftRow);
+            
             for(let i = 1; i <= 17; i++) gridRight.appendChild(createNormalSlot("Dãy Phải", i));
         }
         renderInventoryTable();
@@ -880,7 +878,6 @@
         document.getElementById("action-card").style.display = "block"; 
         document.getElementById("form-mode").value = mode;
 
-        // BẢO ĐẢM KHÔNG BAO GIỜ TRỐNG TỌA ĐỘ KHI MỞ FORM
         document.getElementById("form-wh").value = window.currentWarehouse; 
         document.getElementById("form-side").value = side; 
         document.getElementById("form-slot-num").value = num;
@@ -915,7 +912,7 @@
             document.getElementById("form-customer").value = "Nhập Kho chung"; 
             
             document.getElementById("nhap-info-fields").style.display = "block";
-            document.getElementById("form-date-action").value = new Date().toISOString().substring(0, 10);
+            document.getElementById("form-date-action").value = new DatetoISOString().substring(0, 10);
             toggleLengthInput(); 
         } 
         else if(mode === "xuat") {
@@ -1178,6 +1175,7 @@
                     let finalName = formatItemName(outItem);
                     outText += `${finalName} (+${outItem.qty}); `;
                     let finalNote = note ? `${note} (Từ Cắt/Ghép)` : "Tạo từ Cắt/Ghép";
+                    
                     window.inventory[destKey].push({ name: outItem.name, qty: outItem.qty, itemType: outItem.itemType, lengthPerRoll: outItem.lengthPerRoll, contract: `GC-${rootContract}`, voucher: voucher, dateAction: currentDayStr, customer: finalCustStr, note: finalNote, isCustomerItem: false, isErrorItem: false });
 
                     detailsArr.push({ name: finalName, qty: outItem.qty, type: 'NHẬP', contract: `GC-${rootContract}`, voucher: voucher, pos: destDisplay, partner: finalCustStr, note: note });
@@ -1244,15 +1242,13 @@
         const modal = document.getElementById("log-detail-modal");
         const content = document.getElementById("log-modal-content");
         
-        let displayPos = log.pos.replace("Khàng hóa", "Kho HH").replace("Ksản xuất", "Kho SX");
-
         let html = `
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; background:#f8fafc; padding:12px; border-radius:8px; margin-bottom:15px; border:1px solid #e2e8f0;">
                 <div><b>⏱️ Thời gian:</b> ${log.time}</div>
                 <div><b>🎫 Số Phiếu Gốc:</b> <span style="color:var(--danger); font-weight:bold;">${log.voucher || '---'}</span></div>
                 <div><b>⚡ Hoạt động:</b> ${log.action}</div>
                 <div><b>👤 Khách Hàng:</b> <span style="color:var(--success); font-weight:bold;">${log.customer || '---'}</span></div>
-                <div style="grid-column: span 2;"><b>📍 Vị trí bãi:</b> ${displayPos}</div>
+                <div style="grid-column: span 2;"><b>📍 Vị trí bãi:</b> ${log.pos}</div>
                 <div style="grid-column: span 2;"><b>📝 Ghi chú:</b> <span style="color:var(--warning); font-weight:bold;">${log.note || '---'}</span></div>
             </div>
             <p style="font-weight:bold; color:var(--primary); margin-bottom:6px;">📦 CHI TIẾT DANH SÁCH BIẾN ĐỘNG HÀNG HÓA VÀO/RA KHO:</p>
@@ -1274,12 +1270,11 @@
             log.details.forEach(d => {
                 let color = d.type === 'NHẬP' ? 'color:var(--success);' : 'color:var(--danger);';
                 let sign = d.type === 'NHẬP' ? '+' : '-';
-                let detPos = d.pos.replace("Khàng hóa", "Kho HH").replace("Ksản xuất", "Kho SX");
                 html += `
                     <tr>
                         <td style="padding:8px; border:1px solid #cbd5e1;"><b>${d.name}</b></td>
                         <td style="padding:8px; border:1px solid #cbd5e1; text-align:center; font-family:monospace;">${d.contract || '---'}</td>
-                        <td style="padding:8px; border:1px solid #cbd5e1; text-align:center; font-weight:600;">${detPos}</td>
+                        <td style="padding:8px; border:1px solid #cbd5e1; text-align:center; font-weight:600;">${d.pos}</td>
                         <td style="padding:8px; border:1px solid #cbd5e1; text-align:right; font-weight:900; ${color}">${sign}${d.qty}</td>
                     </tr>
                 `;
@@ -1373,7 +1368,6 @@
 
             let customerText = log.customer || '---';
             let custColor = (customerText === "Nhập Kho chung" || customerText.toLowerCase() === "nội bộ") ? "#059669" : "#d97706";
-            let displayPos = log.pos.replace("Khàng hóa", "Kho HH").replace("Ksản xuất", "Kho SX");
             
             let qtyColor = '#333';
             if(log.action === 'NHẬP' || log.action === 'KÝ GỬI KHO') qtyColor = 'var(--success)';
@@ -1383,7 +1377,7 @@
             row.innerHTML = `
                 <td><small style="color:#64748b;">${log.time.split(' ')[0]}</small><br><b>${log.time.split(' ')[1] || ''}</b></td>
                 <td>${bd}</td>
-                <td><small><b>${displayPos}</b></small></td>
+                <td><small><b>${log.pos}</b></small></td>
                 <td>${displayNameText}<br><small style="color:#64748b;">Phiếu: <b>${log.voucher || '---'}</b></small></td>
                 <td><span style="color:${custColor}; font-weight:700; font-size:11px;">👤 ${customerText}</span></td>
                 <td style="font-weight:bold; text-align:right; font-size:14px; color:${qtyColor}">${log.qty}</td>
@@ -1395,7 +1389,7 @@
 
     window.exportDataToExcel = function(type) {
         const fromDate = document.getElementById("excel-from-date").value; const toDate = document.getElementById("excel-to-date").value;
-        if(!fromDate || !toDate) { alert("Vui lòng chọn đầy đủ mốc thời gian báo cáo!"); return; }
+        if(!fromDate || !toDate) { alert("Vui lòng chọn đầy đủ mốc thời báo cáo!"); return; }
         let wb = XLSX.utils.book_new();
 
         if (type === 'tonghop') {
@@ -1429,11 +1423,10 @@
             window.logs.forEach(log => {
                 if (log.dateRaw && log.dateRaw >= fromDate && log.dateRaw <= toDate && log.details) {
                     log.details.forEach(det => {
-                        let detPos = det.pos.replace("Khàng hóa", "Kho HH").replace("Ksản xuất", "Kho SX");
                         let statusStr = "---";
-                        let gKey = `${detPos}|||${det.name}|||${det.contract}|||${det.partner||'Nhập Kho chung'}|||${statusStr}`;
+                        let gKey = `${det.pos}|||${det.name}|||${det.contract}|||${det.partner||'Nhập Kho chung'}|||${statusStr}`;
                         if (!reportMap[gKey]) {
-                            reportMap[gKey] = { pos: detPos, name: det.name, contract: det.contract, customer: det.partner || 'Nhập Kho chung', status: statusStr, voucher: det.voucher || log.voucher || '---', nhap: 0, xuat: 0, ton: 0 };
+                            reportMap[gKey] = { pos: det.pos, name: det.name, contract: det.contract, customer: det.partner || 'Nhập Kho chung', status: statusStr, voucher: det.voucher || log.voucher || '---', nhap: 0, xuat: 0, ton: 0 };
                         }
                         if (det.type === 'NHẬP') { reportMap[gKey].nhap += det.qty; } 
                         else if (det.type === 'XUẤT') { reportMap[gKey].xuat += det.qty; }
@@ -1458,16 +1451,14 @@
 
             let sortedLogs = [...window.logs].reverse();
             sortedLogs.forEach(log => {
-                let logPos = log.pos.replace("Khàng hóa", "Kho HH").replace("Ksản xuất", "Kho SX");
                 if (log.dateRaw && log.dateRaw >= fromDate && log.dateRaw <= toDate) {
                     if (log.details && log.details.length > 0) {
                         log.details.forEach(det => {
-                            let detPos = det.pos.replace("Khàng hóa", "Kho HH").replace("Ksản xuất", "Kho SX");
-                            detailRows.push([log.time, log.action, det.voucher || log.voucher || '---', detPos, det.name, det.contract, det.type === 'NHẬP' ? det.qty : 0, det.type === 'XUẤT' ? det.qty : 0, det.partner || log.customer || 'Nhập Kho chung', det.note || log.note || '---']);
+                            detailRows.push([log.time, log.action, det.voucher || log.voucher || '---', det.pos, det.name, det.contract, det.type === 'NHẬP' ? det.qty : 0, det.type === 'XUẤT' ? det.qty : 0, det.partner || log.customer || 'Nhập Kho chung', det.note || log.note || '---']);
                         });
                     } else {
                         let rawQtyNum = parseInt(log.qty.replace(/[+-]/g, '')) || 0;
-                        detailRows.push([log.time, log.action, log.voucher || '---', logPos, log.name, '---', log.qty.includes('+') ? rawQtyNum : 0, log.qty.includes('-') ? rawQtyNum : 0, log.customer || 'Nhập Kho chung', log.note || '---']);
+                        detailRows.push([log.time, log.action, log.voucher || '---', log.pos, log.name, '---', log.qty.includes('+') ? rawQtyNum : 0, log.qty.includes('-') ? rawQtyNum : 0, log.customer || 'Nhập Kho chung', log.note || '---']);
                     }
                 }
             });
