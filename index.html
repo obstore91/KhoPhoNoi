@@ -114,7 +114,6 @@
         .giacong-box h4 { font-size: 13px; color: #0891b2; margin-bottom: 8px; border-bottom: 1px solid #a5f3fc; padding-bottom: 4px; }
         .output-row { display: flex; gap: 8px; margin-bottom: 5px; align-items: center; }
 
-        /* CSS BẢNG BÁO CÁO XEM TRƯỚC */
         .preview-table { width: 100%; border-collapse: collapse; margin-top: 5px; font-size: 12px; }
         .preview-table th { background: var(--primary); color: white; padding: 8px; border: 1px solid var(--gray-200); position: sticky; top: 0; z-index: 10; }
         .preview-table td { padding: 6px 8px; border: 1px solid var(--gray-200); }
@@ -143,8 +142,9 @@
     <div class="login-box">
         <h2>🔒 HỆ THỐNG KHO NỘI BỘ</h2>
         <p>Công Ty Cát Tường - Hưng Yên</p>
-        <input type="email" id="site-email-input" value="admin@khocattuong.com" placeholder="Email đăng nhập..." style="text-align: left;">
-        <input type="password" id="site-password-input" placeholder="Nhập mật khẩu..." style="text-align: center;" onkeydown="if(event.key==='Enter') checkSitePassword()">
+        <!-- Đã xóa value mặc định ở ô Email -->
+        <input type="email" id="site-email-input" placeholder="Email đăng nhập..." style="text-align: left;">
+        <input type="password" id="site-password-input" placeholder="Nhập mật khẩu..." style="text-align: left;" onkeydown="if(event.key==='Enter') checkSitePassword()">
         <button type="button" onclick="checkSitePassword()">Đăng Nhập Phần Mềm</button>
         <div id="login-error-msg" class="login-error">❌ Sai tài khoản hoặc mật khẩu!</div>
     </div>
@@ -298,7 +298,6 @@
                     <!-- DANH SÁCH LÔ GỐC (DÙNG CHO XUẤT/CHUYỂN/GIA CÔNG/BÁO LỖI) -->
                     <div id="select-lot-wrapper" style="display:none; background:#fffbf0; padding:10px; border-radius:6px; border:1px solid #fef08a; margin-bottom:10px;">
                         
-                        <!-- CÔNG TẮC ĐIỀU HƯỚNG MỤC ĐÍCH XUẤT -->
                         <div class="form-group" id="export-type-wrapper" style="display:none; margin-bottom:12px; border-bottom:1px dashed #ccc; padding-bottom:12px;">
                             <label style="color:var(--danger); font-size:12px;">📌 BẠN ĐANG MUỐN LÀM GÌ? *</label>
                             <select id="form-export-type" class="form-control" onchange="changeExportType()" style="border: 2px solid var(--danger); font-weight:bold; color:var(--danger); font-size:13px; cursor:pointer;">
@@ -323,7 +322,6 @@
                             </table>
                         </div>
 
-                        <!-- CÔNG TẮC DI CHUYỂN HÀNG LỖI VÀO BÃI RÁC -->
                         <div id="error-move-wrapper" style="display:none; margin-top:10px;">
                             <label style="display:flex; align-items:center; gap:6px; font-weight:bold; color:var(--danger); cursor:pointer;">
                                 <input type="checkbox" id="chk-move-error-to-trash" style="width:16px; height:16px;" checked> Tự động chuyển Hàng Lỗi vào Bãi Phế Phẩm (Khu Ô 16-17)
@@ -454,6 +452,9 @@
     const auth = firebase.auth();
     const ADMIN_PASSWORD = "242026";
 
+    // ÉP FIREBASE QUÊN PHIÊN ĐĂNG NHẬP MỖI KHI F5 HOẶC MỞ TRANG
+    auth.signOut();
+
     window.currentWarehouse = "Kho sản xuất"; 
     window.selectedSlotKey = null;
     window.inventory = {}; 
@@ -463,7 +464,6 @@
     window.isFilteringCustomerItem = false;
     window.isFilteringErrorItem = false;
 
-    // --- CƠ CHẾ ĐĂNG NHẬP MỚI BẰNG FIREBASE AUTH ---
     function checkSitePassword() {
         const email = document.getElementById("site-email-input").value.trim();
         const pass = document.getElementById("site-password-input").value;
@@ -493,18 +493,6 @@
             });
         }
     }
-
-    // Tự động kiểm tra xem đã đăng nhập chưa khi mở web
-    auth.onAuthStateChanged((user) => {
-        if (user) {
-            document.getElementById("login-screen").style.display = "none";
-            document.getElementById("main-app").style.display = "block";
-            syncWithCloud("read");
-        } else {
-            document.getElementById("login-screen").style.display = "flex";
-            document.getElementById("main-app").style.display = "none";
-        }
-    });
 
     const SPECIAL_LABELS = {
         "Kho sản xuất": { "Dãy Phải_1": "🏠 Nhà Vệ Sinh", "Dãy Trái_4": "⚡ Máy Cách Nhiệt 1", "Dãy Trái_5": "⚡ Máy Cách Nhiệt 1", "Dãy Trái_6": "⚡ Máy Cách Nhiệt 2", "Dãy Trái_7": "⚡ Máy Cách Nhiệt 2", "Dãy Trái_9": "⚡ Máy Cách Nhiệt 3", "Dãy Trái_10": "⚙️ Máy SX Lưới" },
@@ -919,7 +907,7 @@
             targetLots = targetLots.filter(item => item.lot.isCustomerItem && !item.lot.isErrorItem);
             document.getElementById("dynamic-customer-label").innerText = "Xác nhận tên khách lấy hàng";
         } else if (expType === 'xuat_loi') {
-            targetLots = targetLots.filter(item => item.lot.isErrorItem);
+            targetLots = targetLots.filter(item => item.lot.isErrorItem); // CHỈ CHỌN HÀNG LỖI ĐỂ XUẤT ĐI
             document.getElementById("dynamic-customer-label").innerText = "Người nhận / Đơn vị xử lý phế phẩm";
         } else {
             targetLots = targetLots.filter(item => !item.lot.isCustomerItem && !item.lot.isErrorItem);
@@ -1477,7 +1465,6 @@
         });
     }
 
-    // THANH TÌM KIẾM TRỰC TIẾP TRÊN POP-UP BÁO CÁO
     window.filterPopupTable = function() {
         const input = document.getElementById("popup-search-input").value.toLowerCase();
         const table = document.querySelector("#report-preview-content table");
