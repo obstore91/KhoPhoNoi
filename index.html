@@ -125,7 +125,7 @@
         .login-box { background: white; padding: 35px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); text-align: center; width: 380px; }
         .login-box h2 { color: #2563eb; margin-bottom: 8px; font-size: 20px; font-weight: 800; }
         .login-box p { font-size: 13px; color: #64748b; margin-bottom: 20px; }
-        .login-box input { width: 100%; padding: 12px; border: 2px solid #cbd5e1; border-radius: 8px; margin-bottom: 15px; font-size: 16px; outline: none; text-align: center; font-weight: bold; letter-spacing: 2px; }
+        .login-box input { width: 100%; padding: 12px; border: 2px solid #cbd5e1; border-radius: 8px; margin-bottom: 15px; font-size: 16px; outline: none; font-weight: bold; letter-spacing: 1px; }
         .login-box input:focus { border-color: #2563eb; }
         .login-box button { width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; transition: background 0.2s; }
         .login-box button:hover { background: #1d4ed8; }
@@ -133,6 +133,7 @@
     </style>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
@@ -142,17 +143,18 @@
     <div class="login-box">
         <h2>🔒 HỆ THỐNG KHO NỘI BỘ</h2>
         <p>Công Ty Cát Tường - Hưng Yên</p>
-        <input type="password" id="site-password-input" placeholder="Nhập mật khẩu xem kho..." onkeydown="if(event.key==='Enter') checkSitePassword()">
+        <input type="email" id="site-email-input" value="admin@khocattuong.com" placeholder="Email đăng nhập..." style="text-align: left;">
+        <input type="password" id="site-password-input" placeholder="Nhập mật khẩu..." style="text-align: center;" onkeydown="if(event.key==='Enter') checkSitePassword()">
         <button type="button" onclick="checkSitePassword()">Đăng Nhập Phần Mềm</button>
-        <div id="login-error-msg" class="login-error">❌ Mật khẩu không đúng! Vui lòng nhập lại.</div>
+        <div id="login-error-msg" class="login-error">❌ Sai tài khoản hoặc mật khẩu!</div>
     </div>
 </div>
 
-<div class="container">
+<div class="container" id="main-app" style="display:none;">
     <header>
         <div>
             <h1>📦 Hệ Thống Kho Cát Tường - Kế Toán Đám Mây</h1>
-            <p id="save-indicator" class="storage-status">🔒 Đang chờ đăng nhập...</p>
+            <p id="save-indicator" class="storage-status">⏳ Đang tải dữ liệu...</p>
         </div>
         <div class="actions-bar">
             <button class="btn-danger" style="background:#dc2626; padding:8px 10px;" onclick="filterErrorItems()" id="btn-filter-err">⚠️ Lọc Hàng Lỗi</button>
@@ -160,6 +162,7 @@
             <input type="text" id="search-input" class="search-box" placeholder="🔍 Tìm trên Sơ đồ (Mã hàng, Số HĐ...)" oninput="handleSearch()">
             <button class="btn-primary" style="background:#0284c7; box-shadow: 0 2px 4px rgba(0,0,0,0.2);" onclick="syncWithCloud('read')">🔄 Làm Mới Dữ Liệu</button>
             <button class="btn-dark" onclick="triggerWebBackupRollback()">⏪ Khôi Phục Lịch Sử</button>
+            <button class="btn-danger" style="background:#991b1b; border:1px solid #7f1d1d;" onclick="logout()">🚪 Đăng Xuất</button>
         </div>
     </header>
 
@@ -173,7 +176,6 @@
                 <input type="date" id="excel-to-date" class="form-control" style="width:130px; padding:4px 8px;">
             </div>
             <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                <!-- ĐÃ ĐỔI TÊN NÚT BÁO CÁO CHO CHUẨN KẾ TOÁN -->
                 <button class="btn-cyan" onclick="exportDataToExcel('tonghop', true)">👁️ Xem Sổ Chi Tiết Kho</button>
                 <button class="btn-excel" onclick="exportDataToExcel('tonghop')">📥 Tải Sổ Chi Tiết</button>
                 <button class="btn-cyan" style="background:#0284c7;" onclick="exportDataToExcel('chitiet', true)">👁️ Xem Báo Cáo XNT</button>
@@ -426,7 +428,6 @@
     </div>
 </div>
 
-<!-- GIAO DIỆN MÀN HÌNH POPUP XEM TRƯỚC BÁO CÁO EXCEL TRỰC TIẾP ĐÃ NÂNG CẤP THANH TÌM KIẾM -->
 <div id="report-preview-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:999999; justify-content:center; align-items:center;" onclick="this.style.display='none'">
     <div class="card" style="width:95%; height:90%; display:flex; flex-direction:column; margin-bottom:0; box-shadow:0 10px 30px rgba(0,0,0,0.4);" onclick="event.stopPropagation()">
         <div class="card-title" style="display:flex; justify-content:space-between; align-items:center; border-bottom: 2px solid var(--primary); padding-bottom:10px;">
@@ -439,18 +440,6 @@
 </div>
 
 <script>
-    function checkSitePassword() {
-        const inputPass = document.getElementById("site-password-input").value;
-        if (inputPass === "khocattuong2") {
-            document.getElementById("login-screen").style.display = "none";
-            syncWithCloud("read");
-        } else {
-            document.getElementById("login-error-msg").style.display = "block";
-            document.getElementById("site-password-input").value = "";
-            document.getElementById("site-password-input").focus();
-        }
-    }
-
     const firebaseConfig = {
         apiKey: "AIzaSyAlB5eqC8w95BVfRvhTMoG_L8bsMEU8iA4",
         authDomain: "quanlykhocattuong.firebaseapp.com",
@@ -462,6 +451,7 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+    const auth = firebase.auth();
     const ADMIN_PASSWORD = "242026";
 
     window.currentWarehouse = "Kho sản xuất"; 
@@ -472,6 +462,49 @@
     
     window.isFilteringCustomerItem = false;
     window.isFilteringErrorItem = false;
+
+    // --- CƠ CHẾ ĐĂNG NHẬP MỚI BẰNG FIREBASE AUTH ---
+    function checkSitePassword() {
+        const email = document.getElementById("site-email-input").value.trim();
+        const pass = document.getElementById("site-password-input").value;
+        if(!email || !pass) {
+            document.getElementById("login-error-msg").style.display = "block";
+            document.getElementById("login-error-msg").innerText = "❌ Vui lòng nhập đủ Email và Mật khẩu!";
+            return;
+        }
+
+        auth.signInWithEmailAndPassword(email, pass)
+            .then((userCredential) => {
+                document.getElementById("login-screen").style.display = "none";
+                document.getElementById("main-app").style.display = "block";
+                syncWithCloud("read");
+            })
+            .catch((error) => {
+                document.getElementById("login-error-msg").style.display = "block";
+                document.getElementById("login-error-msg").innerText = "❌ Sai tài khoản hoặc mật khẩu! Vui lòng thử lại.";
+                console.error(error.message);
+            });
+    }
+
+    function logout() {
+        if(confirm("Bạn có chắc chắn muốn đăng xuất khóa phần mềm?")) {
+            auth.signOut().then(() => {
+                window.location.reload();
+            });
+        }
+    }
+
+    // Tự động kiểm tra xem đã đăng nhập chưa khi mở web
+    auth.onAuthStateChanged((user) => {
+        if (user) {
+            document.getElementById("login-screen").style.display = "none";
+            document.getElementById("main-app").style.display = "block";
+            syncWithCloud("read");
+        } else {
+            document.getElementById("login-screen").style.display = "flex";
+            document.getElementById("main-app").style.display = "none";
+        }
+    });
 
     const SPECIAL_LABELS = {
         "Kho sản xuất": { "Dãy Phải_1": "🏠 Nhà Vệ Sinh", "Dãy Trái_4": "⚡ Máy Cách Nhiệt 1", "Dãy Trái_5": "⚡ Máy Cách Nhiệt 1", "Dãy Trái_6": "⚡ Máy Cách Nhiệt 2", "Dãy Trái_7": "⚡ Máy Cách Nhiệt 2", "Dãy Trái_9": "⚡ Máy Cách Nhiệt 3", "Dãy Trái_10": "⚙️ Máy SX Lưới" },
@@ -886,7 +919,7 @@
             targetLots = targetLots.filter(item => item.lot.isCustomerItem && !item.lot.isErrorItem);
             document.getElementById("dynamic-customer-label").innerText = "Xác nhận tên khách lấy hàng";
         } else if (expType === 'xuat_loi') {
-            targetLots = targetLots.filter(item => item.lot.isErrorItem); // CHỈ CHỌN HÀNG LỖI ĐỂ XUẤT ĐI
+            targetLots = targetLots.filter(item => item.lot.isErrorItem);
             document.getElementById("dynamic-customer-label").innerText = "Người nhận / Đơn vị xử lý phế phẩm";
         } else {
             targetLots = targetLots.filter(item => !item.lot.isCustomerItem && !item.lot.isErrorItem);
